@@ -1,0 +1,39 @@
+@charset "utf-8";
+
+// Prefix
+$css-prefix: 'dolphin-weex-';
+$elementSeparator: '__';
+$modifierSeparator: '--';
+$state-prefix: 'is-';
+
+//color groups 颜色集合
+$defaultColor: #267aff;
+$linkColor: #5580b3;
+$borderBottomColor: #f2f2f2;
+
+$primary: #267aff;
+$purple: #995efc;
+$slate: #6575ff;
+$aqua: #29c3ff;
+$turquoise: #00cbb8;
+$yellow: #ffaa10;
+$orange: #ff8225;
+$tomato: #ff6a4c;
+$gray: #7c879b;
+$white: #ffffff;
+
+$background: #f9f9f9; //背景色
+$auxiliary: #f2f2f2; //辅助色
+$splitLine: #e5e5e8; //分割线的颜色
+
+//特殊场景、功能色
+$warn: #ff8225;
+$success: #25cf42;
+$error: #ff3b30;
+
+// text color 文案颜色
+
+$primaryText: #000000;
+$secondText: #666666;
+$thirdText: #8a8a8f;
+$fourthText: #c7c7cc;

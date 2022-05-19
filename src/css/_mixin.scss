@@ -1,0 +1,212 @@
+// BEM命名辅助函数
+
+@function containsModifier($selector) {
+  $selector: selectorToString($selector);
+  @if str-index($selector, $modifierSeparator) {
+    @return true;
+  } @else {
+    @return false;
+  }
+}
+
+@function selectorToString($selector) {
+  $selector: inspect($selector); //cast to string
+  $selector: str-slice($selector, 2, -2); //remove brackets
+  @return $selector;
+}
+
+@function getBlock($selector) {
+  $selector: selectorToString($selector);
+  $modifierStart: str-index($selector, $modifierSeparator) - 1;
+  @return str-slice($selector, 0, $modifierStart);
+}
+
+@mixin b($block) {
+  .#{$css-prefix + $block} {
+    @content;
+  }
+}
+
+@mixin e($element) {
+  $selector: &;
+  @if containsModifier($selector) {
+    $block: getBlock($selector);
+    @at-root {
+      #{$selector} {
+        #{$block + $elementSeparator + $element} {
+          @content;
+        }
+      }
+    }
+  } @else {
+    @at-root {
+      #{$selector + $elementSeparator + $element} {
+        @content;
+      }
+    }
+  }
+}
+
+@mixin m($modifier) {
+  @at-root {
+    #{&}#{$modifierSeparator + $modifier} {
+      @content;
+    }
+  }
+}
+
+@mixin when($state) {
+  @at-root {
+    &.#{$state-prefix + $state} {
+      @content;
+    }
+  }
+}
+
+/*  
+*@include radius($size:50px);
+*@include radius(top-left,$size:50px);
+*@include radius(top-right,$size:50px);
+*@include radius(bottom-left,$size:50px);
+*@include radius(bottom-right,$size:50px);
+*/
+@mixin radius($dir: all, $size: 5px) {
+  @if $dir == all {
+    border-radius: $size;
+  } @else if $dir == bottom-left {
+    border-bottom-left-radius: $size;
+  } @else if $dir == bottom-right {
+    border-bottom-right-radius: $size;
+  } @else if $dir == top-left {
+    border-top-left-radius: $size;
+  } @else if $dir == top-right {
+    border-top-right-radius: $size;
+  }
+}
+/* 
+*@include border($size:50px);
+*@include border(left,10px,red);
+*@include border(right,10px,red);
+*@include border(top,10px,red);
+*@include border(bottom,10px,red);
+*@include border(x,10px,red);
+*@include border(y,10px,red);
+ */
+@mixin border($dir: all, $width: 1px, $style: solid, $color: #e6e6e6) {
+  @if $dir == all {
+    @include border-left($width, $style, $color);
+    @include border-right($width, $style, $color);
+    @include border-top($width, $style, $color);
+    @include border-bottom($width, $style, $color);
+  } @else if $dir == left {
+    @include border-left($width, $style, $color);
+  } @else if $dir == right {
+    @include border-right($width, $style, $color);
+  } @else if $dir == top {
+    @include border-top($width, $style, $color);
+  } @else if $dir == bottom {
+    @include border-bottom($width, $style, $color);
+  } @else if $dir == x {
+    @include border-left($width, $style, $color);
+    @include border-right($width, $style, $color);
+  } @else if $dir == y {
+    @include border-top($width, $style, $color);
+    @include border-bottom($width, $style, $color);
+  }
+}
+/*  
+*@include border-left(10px,solid,red); 
+*/
+@mixin border-left($width: 1px, $style: solid, $color: #e6e6e6) {
+  border-left-width: $width;
+  border-left-style: $style;
+  border-left-color: $color;
+}
+/* 
+*@include border-right(1px,solid,red);
+*/
+@mixin border-right($width: 1px, $style: solid, $color: #e6e6e6) {
+  border-right-width: $width;
+  border-right-style: $style;
+  border-right-color: $color;
+}
+/* 
+*@include border-top(1px,solid,red);
+*/
+@mixin border-top($width: 1px, $style: solid, $color: #e6e6e6) {
+  border-top-width: $width;
+  border-top-style: $style;
+  border-top-color: $color;
+}
+/* 
+*@include border-bottom(1px,solid,red);
+*/
+@mixin border-bottom($width: 1px, $style: solid, $color: #e6e6e6) {
+  border-bottom-width: $width;
+  border-bottom-style: $style;
+  border-bottom-color: $color;
+}
+/*  
+*@include padding($size:50px);
+*@include padding(left,$size:50px);
+*@include padding(right,$size:50px);
+*@include padding(top,$size:50px);
+*@include padding(bottom,$size:50px);
+*@include padding(x,$size:50px);
+*@include padding(y,$size:50px);
+*/
+
+@mixin padding($dir: all, $size: 20px) {
+  @if $dir == all {
+    padding: $size;
+  } @else if $dir == left {
+    padding-left: $size;
+  } @else if $dir == right {
+    padding-right: $size;
+  } @else if $dir == top {
+    padding-top: $size;
+  } @else if $dir == bottom {
+    padding-bottom: $size;
+  } @else if $dir == x {
+    padding-left: $size;
+    padding-right: $size;
+  } @else if $dir == y {
+    padding-top: $size;
+    padding-bottom: $size;
+  }
+}
+
+/*  
+*@include margin($size:50px);
+*@include margin(left,$size:50px);
+*@include margin(right,$size:50px);
+*@include margin(top,$size:50px);
+*@include margin(bottom,$size:50px);
+**@include margin(x,$size:50px);
+*@include margin(y,$size:50px);
+*/
+
+@mixin margin($dir: all, $size: 20px) {
+  @if $dir == all {
+    margin: $size;
+  } @else if $dir == left {
+    margin-left: $size;
+  } @else if $dir == right {
+    margin-right: $size;
+  } @else if $dir == top {
+    margin-top: $size;
+  } @else if $dir == bottom {
+    margin-bottom: $size;
+  } @else if $dir == x {
+    margin-left: $size;
+    margin-right: $size;
+  } @else if $dir == y {
+    margin-top: $size;
+    margin-bottom: $size;
+  }
+}
+
+@mixin ellipsis($lines: 1) {
+  text-overflow: ellipsis;
+  lines: $lines;
+}

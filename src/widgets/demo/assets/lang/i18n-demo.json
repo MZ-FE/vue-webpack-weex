@@ -1,0 +1,14 @@
+{
+  "en_US": {
+    "message": "hello,world!!",
+    "fruit": {
+      "name": "apples"
+    }
+  },
+  "zh_CN": {
+    "message": "世界，你好!！",
+    "fruit": {
+      "name": "苹果🍎"
+    }
+  }
+}
