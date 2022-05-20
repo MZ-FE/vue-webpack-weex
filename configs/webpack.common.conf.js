@@ -9,7 +9,7 @@ const vueLoaderConfig = require('./vue-loader.conf')
 const vueWeexTemp = helper.rootNode(config.templateWeexDir)
 const vueWeexRouter = helper.rootNode(config.routerWeexDir)
 const weexEntry = {}
-const project_category_name = process.env.CATE_NAME || 'base'
+const project_category_name = process.env.CATE_NAME || 'demo'
 const FILE_TYPE = process.env.FILE_TYPE || '\\w'
 const formatFileType = type => {
   let tempArr = type.split(',')
@@ -31,10 +31,7 @@ const getEntryFile = dir => {
     const lastname = basename[len - 1]
     const filename = lastname.substr(0, lastname.lastIndexOf('.'))
     const templatePathForNative = path.join(vueWeexTemp, filename + '.js')
-    fs.outputFileSync(
-      templatePathForNative,
-      fs.readFileSync(entry).toString()
-    )
+    fs.outputFileSync(templatePathForNative, fs.readFileSync(entry).toString())
     weexEntry[filename] = templatePathForNative
   })
 }
@@ -78,7 +75,8 @@ const getBaseConfig = () => ({
       src: helper.resolve('src'),
       css: helper.resolve('src/css'),
       js: helper.resolve('src/js'),
-      views: helper.resolve('src/views'),
+      widget: helper.resolve('src/widgets/' + project_category_name),
+      views: helper.resolve(`src/widgets/${project_category_name}/views`),
     },
   },
   module: {

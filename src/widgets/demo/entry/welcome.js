@@ -1,4 +1,4 @@
-import App from 'src/widgets/demo/views/welcome'
+import App from 'views/welcome'
 import dolphinweex from 'src/js/dolphinweex.js'
 import exceptionReport from '@/js/exceptionReport.js'
 
