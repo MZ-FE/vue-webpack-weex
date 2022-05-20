@@ -6,11 +6,8 @@ const helper = require('./helper')
 const glob = require('glob')
 const copy = require('copy-webpack-plugin')
 const vueLoaderConfig = require('./vue-loader.conf')
-const vueWebTemp = helper.rootNode(config.templateWebDir)
 const vueWeexTemp = helper.rootNode(config.templateWeexDir)
-const vueWebRouter = helper.rootNode(config.routerWebDir)
 const vueWeexRouter = helper.rootNode(config.routerWeexDir)
-const webEntry = {}
 const weexEntry = {}
 const project_category_name = process.env.CATE_NAME || 'base'
 const FILE_TYPE = process.env.FILE_TYPE || '\\w'
@@ -21,27 +18,6 @@ const formatFileType = type => {
 }
 
 let filePattern = formatFileType(FILE_TYPE)
-
-//输出web端入口文件的内容
-const getWebEntryFileContent = (entryPath, vueFilePath, routerB) => {
-  let contents = ''
-  let entryContents = fs.readFileSync(vueFilePath).toString()
-  let lastContents = ''
-  lastContents = routerB
-    ? `
-new Vue(Vue.util.extend({el: '#root', router}, App));
-router.push('/');
-`
-    : `
-new Vue(Vue.util.extend({el: '#root'}, App));
-`
-  contents += `
-import Vue from 'vue'
-import weex from 'weex-vue-render'
-weex.init(Vue)
-`
-  return contents + entryContents + lastContents
-}
 
 //输出weex端入口文件的内容
 const getWeexEntryFileContent = (entryPath, vueFilePath, routerB) => {
@@ -75,9 +51,7 @@ const getRouterFile = dir => {
     console.log(entry)
     const len = basename.length
     const lastname = basename[len - 1]
-    const routerPathForWeb = path.join(vueWebRouter, lastname)
     const routerPathForNative = path.join(vueWeexRouter, lastname)
-    fs.outputFileSync(routerPathForWeb, getRouterFileContent(entry, true))
     fs.outputFileSync(routerPathForNative, getRouterFileContent(entry, false))
   })
 }
@@ -97,17 +71,11 @@ const getEntryFile = dir => {
     router = reg.test(lastname) ? true : false
     if (router) getRouterFile()
     const filename = lastname.substr(0, lastname.lastIndexOf('.'))
-    const templatePathForWeb = path.join(vueWebTemp, filename + '.web.js')
     const templatePathForNative = path.join(vueWeexTemp, filename + '.js')
-    fs.outputFileSync(
-      templatePathForWeb,
-      getWebEntryFileContent(templatePathForWeb, entry, router)
-    )
     fs.outputFileSync(
       templatePathForNative,
       getWeexEntryFileContent(templatePathForNative, entry, router)
     )
-    webEntry[filename] = templatePathForWeb
     weexEntry[filename] = templatePathForNative
   })
 }
@@ -177,32 +145,6 @@ const getBaseConfig = () => ({
   plugins: plugins,
 })
 
-// Config for compile jsbundle for web.
-const webConfig = getBaseConfig()
-webConfig.entry = Object.assign(webEntry, {
-  vendor: [path.resolve('node_modules/phantom-limb/index.js')],
-})
-webConfig.output.path = helper.rootNode(`/dist/${project_category_name}_web`)
-webConfig.output.filename = '[name].web.js'
-webConfig.module.rules[1].use.push({
-  loader: 'vue-loader',
-  options: Object.assign(vueLoaderConfig({ useVue: true }), {
-    /**
-     * important! should use postTransformNode to add $processStyle for
-     * inline style prefixing.
-     */
-    optimizeSSR: false,
-    compilerModules: [
-      {
-        postTransformNode: el => {
-          // to convert vnode for weex components.
-          require('weex-vue-precompiler')()(el)
-        },
-      },
-    ],
-  }),
-})
-
 // Config for compile jsbundle for native.
 const weexConfig = getBaseConfig()
 weexConfig.entry = weexEntry
@@ -218,4 +160,4 @@ weexConfig.module.rules[1].use.push({
 })
 weexConfig.node = config.nodeConfiguration
 
-module.exports = [webConfig, weexConfig]
+module.exports = weexConfig
