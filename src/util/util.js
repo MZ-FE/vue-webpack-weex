@@ -53,7 +53,7 @@ const util = {
   },
 
   toNum(a) {
-    var a = a.toString()
+    a = a.toString()
     var c = a.split('.')
     var num_place = ['', '0', '00', '000', '0000'],
       r = num_place.reverse()

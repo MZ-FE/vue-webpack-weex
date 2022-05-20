@@ -17,8 +17,8 @@
     "lint:fix": "eslint --ext .js,.vue src --fix . && echo 'Lint complete.'",
     "lint:report": "eslint --ext .js,.vue src -f codeframe > report.txt",
     "prepare": "husky install",
-    "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0 && git add CHANGELOG.md",
     "release": "standard-version",
+    "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0 && git add CHANGELOG.md",
     "prettier": "prettier --write \"src/\"",
     "adb": "adb push \"dist/demo/.\" \"/storage/emulated/0/Android/data/com.midea.ai.appliances/files/MideaHome/T0x13_79099B58/\""
   },

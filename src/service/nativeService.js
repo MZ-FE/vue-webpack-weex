@@ -13,7 +13,6 @@ const isIos = weex.config.env.platform == 'iOS' ? true : false
 import debugUtil from '../util/debugUtil'
 import util from '../util/util'
 
-var isDummy = false
 // import Mock from './mock'  //正式场上线时注释掉
 
 const debugLogSeperator = '**************************************\n'
@@ -575,9 +574,7 @@ export default {
             requestParams.url += '?' + bodyStr
           }
           requestParams.body = ''
-        } else if (requestParams.body && requestParams.method == 'POST') {
-          requestParams.body = requestParams.body
-        }
+        } else if (requestParams.body && requestParams.method == 'POST') {}
 
         if (options.isShowLoading) {
           this.showLoading()
@@ -890,7 +887,7 @@ export default {
             }
           } else {
             //Android 可能直接传个对象
-            var resDataObj = resData
+            resDataObj = resData
             if (isShowLoading) {
               this.hideLoading()
             }

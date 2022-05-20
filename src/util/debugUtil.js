@@ -86,7 +86,6 @@ const debugUtil = {
         arr.push(strCut + '&*&')
         str = str.substring(n)
       } else {
-        str = str
         arr.push(str)
       }
     }
