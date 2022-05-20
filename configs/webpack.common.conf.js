@@ -19,43 +19,6 @@ const formatFileType = type => {
 
 let filePattern = formatFileType(FILE_TYPE)
 
-//输出weex端入口文件的内容
-const getWeexEntryFileContent = (entryPath, vueFilePath, routerB) => {
-  let entryContents = fs.readFileSync(vueFilePath).toString()
-  let lastContents = ''
-  lastContents = routerB
-    ? `
-new Vue(Vue.util.extend({el: '#root', router}, App));
-router.push('/');
-`
-    : `
-new Vue(Vue.util.extend({el: '#root'}, App));
-`
-  return entryContents + lastContents
-}
-
-//处理router内容
-const getRouterFileContent = (source, bullean) => {
-  const dependence = `import Vue from 'vue'\n`
-  let routerContents = fs.readFileSync(source).toString()
-  routerContents = bullean ? dependence + routerContents : routerContents
-  return routerContents
-}
-
-// 生成weex/web端对应的路由文件
-const getRouterFile = dir => {
-  dir = dir || config.sourceDir
-  const entrys = glob.sync(`${dir}/${config.routerFilePath}`, { nodir: true })
-  entrys.forEach(entry => {
-    const basename = entry.split('/')
-    console.log(entry)
-    const len = basename.length
-    const lastname = basename[len - 1]
-    const routerPathForNative = path.join(vueWeexRouter, lastname)
-    fs.outputFileSync(routerPathForNative, getRouterFileContent(entry, false))
-  })
-}
-
 // 根据入口文件生成weex/web端对应的入口文件
 const getEntryFile = dir => {
   dir = dir || config.sourceDir
@@ -66,15 +29,11 @@ const getEntryFile = dir => {
     const basename = entry.split('/')
     const len = basename.length
     const lastname = basename[len - 1]
-    const reg = new RegExp('.router')
-    let router = false
-    router = reg.test(lastname) ? true : false
-    if (router) getRouterFile()
     const filename = lastname.substr(0, lastname.lastIndexOf('.'))
     const templatePathForNative = path.join(vueWeexTemp, filename + '.js')
     fs.outputFileSync(
       templatePathForNative,
-      getWeexEntryFileContent(templatePathForNative, entry, router)
+      fs.readFileSync(entry).toString()
     )
     weexEntry[filename] = templatePathForNative
   })

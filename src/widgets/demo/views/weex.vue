@@ -51,8 +51,7 @@
 </template>
 <script>
 import { DofMinibar, DofButton } from 'dolphin-weex-ui'
-
-const globalEvent = weex.requireModule('globalEvent')
+import { mapState } from 'vuex'
 
 export default {
   components: {
@@ -60,8 +59,7 @@ export default {
     DofButton,
   },
   data: () => ({
-    name: 'home',
-    title: 'Dolphin Weex',
+    // title: 'Dolphin Weex',
     subTitle: '',
     leftButton: './assets/image/header/back_black@2x.png',
     rightButton: './assets/image/header/refresh.png',
@@ -74,6 +72,9 @@ export default {
   }),
   mounted() {
     this.subTitle = 'Midea 模版项目'
+  },
+  computed: {
+    ...mapState(['title']),
   },
   methods: {
     jumpTo() {
