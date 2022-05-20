@@ -6,15 +6,7 @@ const webpack = require('webpack')
 /**
  * Webpack Plugins
  */
-const HtmlWebpackPlugin = require('html-webpack-plugin-for-multihtml')
-const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin')
-const FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin')
-const portfinder = require('portfinder')
-
-const project_category_name = process.env.CATE_NAME || 'demo'
-
 const config = require('./config')
-const utils = require('./utils')
 const helper = require('./helper')
 
 /**
