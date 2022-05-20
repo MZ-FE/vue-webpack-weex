@@ -49,6 +49,8 @@
 </template>
 
 <script>
+import leftButton from 'assets/image/header/back_black@2x.png'
+import rightButton from 'assets/image/header/refresh.png'
 import { DofCell2, DofMinibar } from 'dolphin-weex-ui'
 const lottieModule = weex.requireModule('lottieModule')
 import circle from '../../assets/lottie/circle.json'
@@ -60,11 +62,11 @@ export default {
   },
   data() {
     return {
-      leftButton: './assets/image/header/back_black@2x.png',
-      rightButton: './assets/image/header/refresh.png',
       word: 'it is time to develop plugins yourself',
       lottieData: '',
       isLottieShow: false,
+      leftButton,
+      rightButton,
     }
   },
   created() {},

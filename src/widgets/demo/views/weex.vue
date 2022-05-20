@@ -19,7 +19,7 @@
       </div>
     </dof-minibar>
     <div class="center margin-top-80">
-      <image class="logo" src="./assets/image/logo.png"></image>
+      <image class="logo" :src="logo"></image>
       <text class="h2">{{ title }}</text>
       <text class="h4 margin-top-40 margin-bottom-20">{{ subTitle }}</text>
       <dof-button
@@ -50,6 +50,9 @@
   </div>
 </template>
 <script>
+import leftButton from 'assets/image/header/back_black@2x.png'
+import rightButton from 'assets/image/header/refresh.png'
+import logo from 'assets/image/logo.png'
 import { DofMinibar, DofButton } from 'dolphin-weex-ui'
 import { mapState } from 'vuex'
 
@@ -61,8 +64,9 @@ export default {
   data: () => ({
     // title: 'Dolphin Weex',
     subTitle: '',
-    leftButton: './assets/image/header/back_black@2x.png',
-    rightButton: './assets/image/header/refresh.png',
+    leftButton,
+    rightButton,
+    logo,
     headerStyle: {
       fontFamily: 'PingFangSC-Regular',
       fontWeight: '900',
@@ -97,6 +101,8 @@ export default {
 </script>
 
 <style scoped>
+.app-wrapper {
+}
 .logo {
   width: 150px;
   height: 150px;

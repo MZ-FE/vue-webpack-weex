@@ -11,7 +11,7 @@
   "scripts": {
     "start": "npm run dev",
     "dev": "npm run clean:all && npm run serve",
-    "serve": "cross-env CATE_NAME=demo FILE_TYPE= webpack-dev-server --env.NODE_ENV=development --progress",
+    "serve": "cross-env CATE_NAME=demo webpack --watch --env development",
     "clean:all": "rimraf ./.temp && rimraf ./dist && rimraf ./release && rimraf ./publish && rimraf ./publish.zip",
     "lint": "eslint --ext .js,.vue src",
     "lint:fix": "eslint --ext .js,.vue src --fix . && echo 'Lint complete.'",
@@ -21,7 +21,7 @@
     "release": "standard-version",
     "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0 && git add CHANGELOG.md",
     "prettier": "prettier --write \"src/\"",
-    "adb": "adb push \"dist/demo/.\" \"/storage/emulated/0/Android/data/com.midea.ai.appliances/files/MideaHome/T0x13_79099B58/\""
+    "adb": "adb push \"dist/.\" \"/storage/emulated/0/Android/data/com.midea.ai.appliances/files/MideaHome/T0x13_79099B58/\""
   },
   "config": {
     "commitizen": {
@@ -32,7 +32,6 @@
     "dayjs": "^1.11.2",
     "dolphin-native-bridge": "^0.1.20",
     "dolphin-weex-ui": "^0.3.3",
-    "postcss-weex": "^1.0.6",
     "vue": "^2.6.14",
     "vuex": "3.6.2",
     "weex-bindingx": "0.0.48",
@@ -47,6 +46,7 @@
     "babel-plugin-component": "^1.1.1",
     "babel-plugin-transform-runtime": "^6.23.0",
     "babel-preset-stage-0": "^6.24.1",
+    "clean-webpack-plugin": "^4.0.0",
     "commitizen": "^4.2.4",
     "copy-webpack-plugin": "^4.5.2",
     "cross-env": "^5.2.0",
@@ -57,20 +57,18 @@
     "eslint-config-prettier": "^6.0.0",
     "eslint-plugin-prettier": "^3.1.0",
     "eslint-plugin-vue": "^5.2.3",
-    "friendly-errors-webpack-plugin": "^1.7.0",
-    "fs-extra": "^5.0.0",
-    "glob": "^7.1.2",
+    "file-loader": "^6.2.0",
+    "fs-extra": "^10.1.0",
     "husky": "^8.0.1",
     "node-notifier": "^5.1.2",
     "prettier": "^2.6.2",
     "rimraf": "^2.6.2",
     "standard-version": "^9.5.0",
-    "uglifyjs-webpack-plugin": "^1.3.0",
+    "terser-webpack-plugin": "^5.3.1",
     "vue-style-loader": "^3.0.3",
-    "webpack": "^3.10.0",
-    "webpack-bundle-analyzer": "^4.3.0",
-    "webpack-dev-server": "^2.11.5",
-    "webpack-merge": "^4.1.0",
+    "webpack": "^5.72.1",
+    "webpack-cli": "^4.9.2",
+    "webpack-merge": "^5.8.0",
     "weex-loader": "^0.7.2"
   }
 }
