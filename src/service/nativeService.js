@@ -574,7 +574,8 @@ export default {
             requestParams.url += '?' + bodyStr
           }
           requestParams.body = ''
-        } else if (requestParams.body && requestParams.method == 'POST') {}
+        } else if (requestParams.body && requestParams.method == 'POST') {
+        }
 
         if (options.isShowLoading) {
           this.showLoading()
