@@ -23,11 +23,6 @@
     "prettier": "prettier --write \"src/\"",
     "adb": "adb push \"dist/demo/.\" \"/storage/emulated/0/Android/data/com.midea.ai.appliances/files/MideaHome/T0x13_79099B58/\""
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "npm run prettier"
-    }
-  },
   "config": {
     "commitizen": {
       "path": "./node_modules/cz-customizable"
