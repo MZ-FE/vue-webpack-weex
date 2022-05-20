@@ -1,6 +1,0 @@
-{
-  "AppName": "DolphinWeexApp",
-  "AppId": "com.midea.weex",
-  "SplashText": "Hello\nWeex",
-  "WeexBundle": "index.js"
-}
