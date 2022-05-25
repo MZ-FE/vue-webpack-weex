@@ -22,6 +22,9 @@
       <image class="logo" :src="logo"></image>
       <text class="h2">{{ title }}</text>
       <text class="h4 margin-top-40 margin-bottom-20">{{ subTitle }}</text>
+      <text class="h4 margin-top-40 margin-bottom-20">
+        version:{{ version }}
+      </text>
       <dof-button
         class="margin-top-80"
         text="打印测试($toast)"
@@ -67,6 +70,7 @@ export default {
     leftButton,
     rightButton,
     logo,
+    // version: process.env.PLUGIN_VERSION,
     headerStyle: {
       fontFamily: 'PingFangSC-Regular',
       fontWeight: '900',
@@ -90,7 +94,7 @@ export default {
       this.$reload()
     },
     toast() {
-      this.$toast('world')
+      this.$toast(JSON.stringify(process))
       this.$bridge.hapticFeedback()
     },
     alert() {
