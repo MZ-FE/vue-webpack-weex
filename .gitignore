@@ -18,6 +18,7 @@
 */.idea
 */build
 /.temp
+/entry
 
 /src/widgets/T0x13
 /src/widgets/latest

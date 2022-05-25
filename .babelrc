@@ -9,14 +9,6 @@
         "regenerator": true,
         "moduleName": "babel-runtime"
       }
-    ],
-    [
-      "component",
-      {
-        "libraryName": "dolphin-weex-ui",
-        "libDir": "packages",
-        "style": false
-      }
     ]
   ]
 }

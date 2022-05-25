@@ -1,4 +1,3 @@
-import nativeService from 'src/service/nativeService'
 // ************ push 相关 *************
 const util = {
   dateFormat(dateTime, fmt) {

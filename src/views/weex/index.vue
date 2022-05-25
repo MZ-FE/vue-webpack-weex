@@ -90,7 +90,7 @@ export default {
       this.$reload()
     },
     toast() {
-      this.$toast('hello, dolphinWeex')
+      this.$toast('world')
       this.$bridge.hapticFeedback()
     },
     alert() {

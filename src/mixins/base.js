@@ -1,6 +1,6 @@
-import nativeService from 'src/service/nativeService'
 import debugUtil from 'src/util/debugUtil'
 import { DofMinibar } from 'dolphin-weex-ui'
+import { Bridge } from 'dolphin-native-bridge'
 
 const appDataTemplate = {}
 const bundleUrl = weex.config.bundleUrl
@@ -11,7 +11,6 @@ const srcFileName = bundleUrl.substring(
   bundleUrl.lastIndexOf('.js')
 )
 const globalEvent = weex.requireModule('globalEvent')
-const storage = weex.requireModule('storage')
 const appDataChannel = new BroadcastChannel(plugin_name + 'appData')
 const pushDataChannel = new BroadcastChannel(plugin_name + 'pushData')
 
@@ -114,7 +113,7 @@ export default {
       if (!this.isNavigating) {
         this.isNavigating = true
         // 离开时同步全局应用数据
-        nativeService.setItem(this.appDataKey, this.appData, () => {
+        Bridge.setItem(this.appDataKey, this.appData, () => {
           //跳转页面
           var path = pageName + '.js'
           if (params) {
@@ -128,7 +127,7 @@ export default {
                 .join('&')
           }
           options.viewTag = pageName
-          nativeService.goTo(path, options)
+          Bridge.goTo(path, options)
           setTimeout(() => {
             this.isNavigating = false
           }, 500)
@@ -137,15 +136,15 @@ export default {
     },
     back() {
       //返回上一页
-      nativeService.goBack()
+      Bridge.goBack()
     },
     exit() {
-      nativeService.backToNative()
+      Bridge.backToNative()
     },
     getAppData() {
       //获取全局应用数据
       return new Promise((resolve, reject) => {
-        nativeService.getItem(this.appDataKey, resp => {
+        Bridge.getItem(this.appDataKey, resp => {
           let data
           if (resp.result == 'success') {
             data = resp.data
@@ -170,7 +169,7 @@ export default {
     resetAppData() {
       //重置全局应用数据
       return new Promise((resolve, reject) => {
-        nativeService.removeItem(this.appDataKey, resp => {
+        Bridge.removeItem(this.appDataKey, resp => {
           this.appData = JSON.parse(JSON.stringify(appDataTemplate))
           appDataChannel.postMessage(this.appData)
           resolve()
@@ -182,7 +181,7 @@ export default {
       debugUtil.debugLog(srcFileName, this.pushKey, data)
     },
     reload() {
-      nativeService.reload()
+      Bridge.reload()
     },
   },
 }
