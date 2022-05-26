@@ -1,5 +1,4 @@
 const path = require('path')
-const fs = require('fs')
 const { merge } = require('webpack-merge')
 const TerserPlugin = require('terser-webpack-plugin')
 
@@ -7,7 +6,7 @@ const entry = require('./build/makeEntryFile')
 const rules = require('./build/webpackLoaders')
 const plugins = require('./build/webpackPlugins')
 
-module.exports = mode => {
+module.exports = (env, argv) => {
   const commonConfig = {
     entry,
     output: {
@@ -29,8 +28,8 @@ module.exports = mode => {
       },
     },
   }
-  if (mode.development) {
-    return merge(commonConfig, {mode: 'development'})
+  if (argv.mode === 'development') {
+    return merge(commonConfig, { mode: 'development' })
   }
   return merge(commonConfig, {
     mode: 'production',

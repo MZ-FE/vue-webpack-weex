@@ -70,6 +70,7 @@ export default {
     leftButton,
     rightButton,
     logo,
+    version: PLUGIN_VERSION,
     // version: process.env.PLUGIN_VERSION,
     headerStyle: {
       fontFamily: 'PingFangSC-Regular',
@@ -94,7 +95,7 @@ export default {
       this.$reload()
     },
     toast() {
-      this.$toast(JSON.stringify(process))
+      this.$toast('hello')
       this.$bridge.hapticFeedback()
     },
     alert() {
@@ -105,8 +106,6 @@ export default {
 </script>
 
 <style scoped>
-.app-wrapper {
-}
 .logo {
   width: 150px;
   height: 150px;
