@@ -14,6 +14,7 @@
     "build": "npm run clean:all && webpack --mode=production",
     "clean:all": "rimraf ./entry && rimraf ./dist && rimraf ./release",
     "lint": "eslint --ext .js,.vue src",
+    "lint:fix": "eslint --ext .js,.vue src --fix",
     "prepare": "husky install",
     "cz": "cz",
     "release": "standard-version",
@@ -32,7 +33,7 @@
     "dolphin-weex-ui": "^0.3.3",
     "vue": "^2.6.14",
     "vuex": "3.6.2",
-    "weex-bindingx": "0.0.48",
+    "weex-bindingx": "0.0.49",
     "weex-vue-render": "^1.0.36"
   },
   "devDependencies": {
@@ -59,7 +60,6 @@
     "fs-extra": "^10.1.0",
     "glob": "^8.0.3",
     "husky": "^8.0.1",
-    "node-notifier": "^5.1.2",
     "prettier": "^2.6.2",
     "rimraf": "^2.6.2",
     "standard-version": "^9.5.0",
@@ -68,6 +68,6 @@
     "webpack": "^5.72.1",
     "webpack-cli": "^4.9.2",
     "webpack-merge": "^5.8.0",
-    "weex-loader": "^0.7.2"
+    "weex-loader": "^0.7.12"
   }
 }
