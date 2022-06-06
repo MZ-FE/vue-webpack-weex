@@ -33,6 +33,18 @@ module.exports = (env, argv) => {
   }
   return merge(commonConfig, {
     mode: 'production',
+    plugins: [
+      // 打包完成后退出，可以继续执行后续的的脚本
+      {
+        apply: compiler => {
+          compiler.hooks.done.tap('exit', () => {
+            setTimeout(() => {
+              process.exit(0)
+            })
+          })
+        },
+      },
+    ],
     optimization: {
       usedExports: true,
       minimize: true,
