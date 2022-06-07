@@ -12,6 +12,7 @@
     "start": "npm run dev",
     "dev": "npm run clean:all && webpack --watch --mode=development",
     "build": "npm run clean:all && webpack --mode=production",
+    "build:zip": "npm run clean:all && webpack --mode=production && node ./build/zip.js",
     "clean:all": "rimraf ./entry && rimraf ./dist && rimraf ./release",
     "lint": "eslint --ext .js,.vue src",
     "lint:fix": "eslint --ext .js,.vue src --fix",

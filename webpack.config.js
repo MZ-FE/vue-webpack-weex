@@ -1,17 +1,17 @@
 const path = require('path')
 const { merge } = require('webpack-merge')
 const TerserPlugin = require('terser-webpack-plugin')
-
+const env = require('dotenv').config().parsed
 const entry = require('./build/makeEntryFile')
 const rules = require('./build/webpackLoaders')
 const plugins = require('./build/webpackPlugins')
 
-module.exports = (env, argv) => {
+module.exports = (_, argv) => {
   const commonConfig = {
     entry,
     output: {
       filename: '[name].js',
-      path: path.resolve(__dirname, 'dist'),
+      path: path.resolve(__dirname, 'dist', env.DEVICE_INFO),
     },
     module: {
       rules,
