@@ -1,6 +1,7 @@
 import debugUtil from 'src/util/debugUtil'
-import { DofMinibar } from 'dolphin-weex-ui'
+import { Core, DofMinibar } from 'dolphin-weex-ui'
 import { Bridge } from 'dolphin-native-bridge'
+import { mapActions, mapMutations } from 'vuex'
 
 const appDataTemplate = {}
 const bundleUrl = weex.config.bundleUrl
@@ -23,8 +24,7 @@ export default {
     DofMinibar,
   },
   data: () => ({
-    title: '',
-    isIos: weex.config.env.platform == 'iOS' ? true : false,
+    isIos: weex.config.env.platform === 'iOS' ? true : false,
     srcFileName: srcFileName,
     pluginVersion: '1.0.0',
     pluginName: plugin_name,
@@ -42,46 +42,15 @@ export default {
     },
     isImmersion: function () {
       let result = true
-      if (weex.config.env.isImmersion == 'false') {
+      if (weex.config.env.isImmersion === 'false') {
         result = false
       }
       return result
     },
-    isipx() {
-      return (
-        weex &&
-        (weex.config.env.deviceModel === 'iPhone10,3' ||
-          weex.config.env.deviceModel === 'iPhone10,6' || //iphoneX
-          weex.config.env.deviceModel === 'iPhone11,8' || //iPhone XR
-          weex.config.env.deviceModel === 'iPhone11,2' || //iPhone XS
-          weex.config.env.deviceModel === 'iPhone11,4' ||
-          weex.config.env.deviceModel === 'iPhone11,6') //iPhone XS Max
-      )
-    },
   },
-  created() {
-    console.log('created')
-    //若isMixinCreated为false, 则不继承
-    if (!this.isMixinCreated) return
-    //Debug Log相关信息
-    debugUtil.isEnableDebugInfo = false //开启关闭debuglog功能
-    debugUtil.debugLog(
-      '@@@@@@ ' +
-        this.title +
-        '(' +
-        plugin_name +
-        '-' +
-        srcFileName +
-        ') @@@@@@'
-    )
-    //监听全局推送(native->weex)
-    globalEvent.addEventListener(this.pushKey, data => {
-      debugUtil.debugLog(this.title + '=>' + this.pushKey + ': ' + data)
-      //触发本页面处理事件
-      this.handleNotification(data || {})
-      //触发其他页面处理事件
-      pushDataChannel.postMessage(data)
-    })
+  async created() {
+    await this.updateDeviceInfo()
+    await this.updateDeviceDetail()
     //监听全局推送通信渠道(weex->weex)
     pushDataChannel.onmessage = event => {
       this.handleNotification(event.data || {})
@@ -94,9 +63,46 @@ export default {
     this.getAppData().then(data => {
       this.appData = data || {}
     })
+    // 监听安卓物理返回键
+    // todo: 待实现返回主页时清除pageName缓存
+    this.$bridge.addEventListener('receiveMessageFromApp', data => {
+      debugUtil.log('receiveMessageFromApp', data)
+      // // App端主动通知weex端重新查询状态
+      // if (data.messageType === 'queryStatusFromApp') {
+      //   this.updateDeviceInfo()
+      // } else if (data.messageType === 'hardwareBackClick') {
+      //   // 如果从插件主页返回美居首页，则清除缓存
+      //   if (srcFileName === 'weex') {
+      //     this.$storage.removeStorage('pageName')
+      //   }
+      //   this.$bridge.pop()
+      // }
+    })
   },
   methods: {
-    viewappear() {},
+    ...mapMutations(['setTrackInfo']),
+    ...mapActions(['updateDeviceInfo', 'updateDeviceDetail', 'setBurialPoint']),
+    async viewappear() {
+      const referPageName = await this.$storage
+        .getStorage('pageName')
+        .catch(err => debugUtil.log('getStorage-err', err)) // 获取之前的页面名称
+      const curPageName = PAGE_NAME[srcFileName]
+      this.setTrackInfo({
+        referPageName: referPageName || '美居首页',
+        curPageName: curPageName,
+      })
+      this.$storage.setStorage('pageName', curPageName) // 更新缓存中的当前页面名称
+
+      // 由于安卓端viewappear事件比created早触发，可能会出现初始化信息获取不到的情况，延迟触发埋点
+      setTimeout(() => {
+        this.setBurialPoint({
+          event: 'plugin_page_view',
+          eventParams: {
+            refer_name: referPageName || '美居首页',
+          },
+        })
+      }, 1000)
+    },
     viewdisappear() {
       debugUtil.resetDebugLog()
     },
@@ -135,6 +141,10 @@ export default {
       }
     },
     back() {
+      // 如果从插件主页返回美居首页，则清除缓存
+      if (srcFileName === 'weex') {
+        this.$storage.removeStorage('pageName')
+      }
       //返回上一页
       Bridge.goBack()
     },

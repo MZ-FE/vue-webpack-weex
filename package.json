@@ -32,6 +32,7 @@
     "dayjs": "^1.11.2",
     "dolphin-native-bridge": "^0.1.20",
     "dolphin-weex-ui": "^0.3.3",
+    "lodash": "^4.17.21",
     "vue": "^2.6.14",
     "vuex": "3.6.2",
     "weex-bindingx": "0.0.49",

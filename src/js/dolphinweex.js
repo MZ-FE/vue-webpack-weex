@@ -4,7 +4,6 @@
 const stream = weex.requireModule('stream')
 import { DofMinibar, Core, Utils } from 'dolphin-weex-ui'
 import { Bridge } from 'dolphin-native-bridge'
-import { baseURL, ENV } from './config.js'
 let dolphinweex = {
   /**
    * 发送GET请求
@@ -98,7 +97,6 @@ let dolphinweex = {
   },
   install(Vue, options) {
     let that = dolphinweex
-    let Bus = new Vue()
     Vue.mixin({
       components: {
         'dof-minibar': DofMinibar,
@@ -110,23 +108,16 @@ let dolphinweex = {
     Vue.prototype.$native = Bridge
     Vue.prototype.$bridge = Bridge
     Vue.prototype.$util = Utils
-    Vue.prototype.$ENV = ENV
-    Vue.prototype.$baseURL = baseURL
     Vue.prototype.$alert = Core.alert
     Vue.prototype.$toast = Core.toast
     Vue.prototype.$reload = Core.reload
     Vue.prototype.$confirm = Core.confirm
-    Vue.prototype.$show = Core.show
     Vue.prototype.$showSuccess = Core.showSuccess
     Vue.prototype.$showError = Core.showError
-    Vue.prototype.$hide = Core.hide
     Vue.prototype.$getContextPath = Core.getContextPath
     Vue.prototype.$push = Bridge.push
     Vue.prototype.$pop = Bridge.pop
     Vue.prototype.$storage = Core.storage
-    Vue.prototype.$post = that.post
-    Vue.prototype.$get = that.get
-    Vue.prototype.$bus = Bus
   },
 }
 

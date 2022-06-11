@@ -1,5 +1,9 @@
 <template>
-  <div class="app-wrapper">
+  <div
+    class="app-wrapper"
+    @viewappear="viewappear"
+    @viewdisappear="viewdisappear"
+  >
     <dof-minibar
       title="插件"
       backgroundColor="transparent"
@@ -21,10 +25,9 @@
     <div class="center margin-top-80">
       <image class="logo" :src="logo"></image>
       <text class="h2">{{ title }}</text>
-      <text class="h4 margin-top-40 margin-bottom-20">{{ subTitle }}</text>
-      <text class="h4 margin-top-40 margin-bottom-20">
-        version:{{ version }}
-      </text>
+      <text class="h4">{{ subTitle }}</text>
+      <text class="h4"> version:{{ version }} </text>
+      <text class="h4"> file:{{ srcFileName }} </text>
       <dof-button
         class="margin-top-80"
         text="打印测试($toast)"
@@ -58,20 +61,20 @@ import rightButton from 'assets/image/header/refresh.png'
 import logo from 'assets/image/logo.png'
 import { DofMinibar, DofButton } from 'dolphin-weex-ui'
 import { mapState } from 'vuex'
+import base from '../../mixins/base'
 
 export default {
   components: {
     DofMinibar,
     DofButton,
   },
+  mixins: [base],
   data: () => ({
-    // title: 'Dolphin Weex',
     subTitle: '',
     leftButton,
     rightButton,
     logo,
     version: PLUGIN_VERSION,
-    // version: process.env.PLUGIN_VERSION,
     headerStyle: {
       fontFamily: 'PingFangSC-Regular',
       fontWeight: '900',
@@ -83,19 +86,21 @@ export default {
     this.subTitle = 'Midea 模版项目'
   },
   computed: {
-    ...mapState(['title']),
+    ...mapState(['title', 'trackInfo']),
   },
   methods: {
     jumpTo() {
       let url = 'welcome.js'
       this.$push(url)
     },
-    minibarLeftButtonClick() {},
+    minibarLeftButtonClick() {
+      this.back()
+    },
     minibarRightButtonClick() {
       this.$reload()
     },
     toast() {
-      this.$toast('hello')
+      this.$toast(JSON.stringify(this.trackInfo))
       this.$bridge.hapticFeedback()
     },
     alert() {

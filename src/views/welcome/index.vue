@@ -1,5 +1,5 @@
 <template>
-  <div class="wrapper">
+  <div class="wrapper" @viewappear="viewappear" @viewdisappear="viewdisappear">
     <dof-minibar
       title="欢迎页"
       backgroundColor="transparent"
@@ -55,11 +55,13 @@ import { DofCell2, DofMinibar } from 'dolphin-weex-ui'
 const lottieModule = weex.requireModule('lottieModule')
 import circle from '../../assets/lottie/circle.json'
 import egg from '../../assets/lottie/color-egg.json'
+import base from '../../mixins/base'
 
 export default {
   components: {
     DofMinibar,
   },
+  mixins: [base],
   data() {
     return {
       word: 'it is time to develop plugins yourself',
