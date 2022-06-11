@@ -105,7 +105,8 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+@import '../../css/dolphinweex.scss';
 .logo {
   width: 150px;
   height: 150px;
