@@ -1,13 +1,13 @@
 {
-  "name": "weex-demo-project",
+  "name": "<%= projectName %>",
   "description": "A weex project with dolphin weex ui",
-  "version": "0.0.4",
+  "version": "<%= version %>",
   "main": "",
   "keywords": [
     "weex",
     "vue"
   ],
-  "author": "",
+  "author": "<%= author %>",
   "scripts": {
     "start": "npm run dev",
     "dev": "npm run clean:all && webpack --watch --mode=development",

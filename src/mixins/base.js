@@ -66,19 +66,10 @@ export default {
     })
     this.$bridge.addEventListener('receiveMessage', data => {
       this.updateDeviceDetail({ delay: 2000 })
+      debugUtil.log('receiveMessage', data)
     })
     this.$bridge.addEventListener('receiveMessageFromApp', data => {
       debugUtil.log('receiveMessageFromApp', data)
-      // // App端主动通知weex端重新查询状态
-      // if (data.messageType === 'queryStatusFromApp') {
-      //   this.updateDeviceInfo()
-      // } else if (data.messageType === 'hardwareBackClick') {
-      //   // 如果从插件主页返回美居首页，则清除缓存
-      //   if (srcFileName === 'weex') {
-      //     this.$storage.removeStorage('pageName')
-      //   }
-      //   this.$bridge.pop()
-      // }
     })
   },
   methods: {

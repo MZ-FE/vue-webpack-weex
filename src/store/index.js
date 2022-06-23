@@ -60,7 +60,10 @@ export default new Vuex.Store({
       commit('setDeviceInfo', response.result)
       return response
     },
-    async updateDeviceDetail({ commit, state }, { isShowLoading = false, delay = 0 } = {}) {
+    async updateDeviceDetail(
+      { commit, state },
+      { isShowLoading = false, delay = 0 } = {}
+    ) {
       const response = await Bridge.sendLuaRequest(
         {
           operation: 'luaQuery',
