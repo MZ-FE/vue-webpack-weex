@@ -1,5 +1,5 @@
 import debugUtil from 'src/util/debugUtil'
-import { Core, DofMinibar } from 'dolphin-weex-ui'
+import { DofMinibar } from 'dolphin-weex-ui'
 import { Bridge } from 'dolphin-native-bridge'
 import { mapActions, mapMutations } from 'vuex'
 
@@ -24,7 +24,7 @@ export default {
     DofMinibar,
   },
   data: () => ({
-    isIos: weex.config.env.platform === 'iOS' ? true : false,
+    isIos: weex.config.env.platform === 'iOS',
     srcFileName: srcFileName,
     pluginVersion: '1.0.0',
     pluginName: plugin_name,
@@ -35,6 +35,7 @@ export default {
     pushKey: 'receiveMessage',
     pushDataChannel: pushDataChannel,
     appData: appDataTemplate,
+    appearCount: 0,
   }),
   computed: {
     pageHeight() {
@@ -63,8 +64,9 @@ export default {
     this.getAppData().then(data => {
       this.appData = data || {}
     })
-    // 监听安卓物理返回键
-    // todo: 待实现返回主页时清除pageName缓存
+    this.$bridge.addEventListener('receiveMessage', data => {
+      this.updateDeviceDetail({ delay: 2000 })
+    })
     this.$bridge.addEventListener('receiveMessageFromApp', data => {
       debugUtil.log('receiveMessageFromApp', data)
       // // App端主动通知weex端重新查询状态
@@ -83,12 +85,25 @@ export default {
     ...mapMutations(['setTrackInfo']),
     ...mapActions(['updateDeviceInfo', 'updateDeviceDetail', 'setBurialPoint']),
     async viewappear() {
-      const referPageName = await this.$storage
+      // 判断referPage，用于埋点
+      const appearCount = await this.$storage
+        .getStorage('appearCount')
+        .catch(err => debugUtil.log('getStorage-err', err)) // 获取之前的计数值，如果是0说明从美居首页进入
+      debugUtil.log('appearCount', appearCount)
+      if (!appearCount || srcFileName === 'weex') {
+        this.appearCount = 1
+      } else {
+        this.appearCount = appearCount + 2
+      }
+      let referPageName = await this.$storage
         .getStorage('pageName')
         .catch(err => debugUtil.log('getStorage-err', err)) // 获取之前的页面名称
+      if (parseInt(appearCount) === 0 && srcFileName === 'weex') {
+        referPageName = '美居首页'
+      }
       const curPageName = PAGE_NAME[srcFileName]
       this.setTrackInfo({
-        referPageName: referPageName || '美居首页',
+        referPageName: referPageName,
         curPageName: curPageName,
       })
       this.$storage.setStorage('pageName', curPageName) // 更新缓存中的当前页面名称
@@ -104,6 +119,9 @@ export default {
       }, 1000)
     },
     viewdisappear() {
+      this.appearCount--
+      this.$storage.setStorage('appearCount', this.appearCount)
+      debugUtil.log('appearCount', this.appearCount)
       debugUtil.resetDebugLog()
     },
     getParameterByName: function (name) {

@@ -20,6 +20,7 @@ export default new Vuex.Store({
     otherInfo: {
       deviceModel: '', // 设备型号
     }, // 保存额外设备信息
+    timer: null, // 定时器，用于防抖
   },
   getters: {
     isDeviceInfoInit(state) {
@@ -45,6 +46,9 @@ export default new Vuex.Store({
     setDeviceModel(state, payload) {
       state.otherInfo.deviceModel = payload
     },
+    setTimer(state, payload) {
+      state.timer = payload
+    },
   },
   actions: {
     async updateDeviceInfo({ commit }) {
@@ -56,7 +60,7 @@ export default new Vuex.Store({
       commit('setDeviceInfo', response.result)
       return response
     },
-    async updateDeviceDetail({ commit }, { isShowLoading = false } = {}) {
+    async updateDeviceDetail({ commit, state }, { isShowLoading = false, delay = 0 } = {}) {
       const response = await Bridge.sendLuaRequest(
         {
           operation: 'luaQuery',
@@ -73,7 +77,14 @@ export default new Vuex.Store({
         Bridge.toast('设备状态获取失败')
         return
       }
-      commit('setDeviceDetail', response.result)
+      // 防抖处理
+      if (state.timer) {
+        clearTimeout(state.timer)
+      }
+      const timer = setTimeout(() => {
+        commit('setDeviceDetail', response.result)
+      }, delay)
+      commit('setTimer', timer)
       return response
     },
     async luaControl(
