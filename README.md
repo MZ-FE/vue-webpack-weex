@@ -1,4 +1,5 @@
-#  Weex template
+#  vue-webpack-weex
+[详细文档](https://github.com/MZ-FE/vue-webpack-weex/wiki)
 
 ## Build Setup
 
