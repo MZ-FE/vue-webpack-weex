@@ -4,8 +4,14 @@ const path = require('path')
 const fse = require('fs-extra')
 const env = require('dotenv').config().parsed
 
-// 压缩打包操作
-const compressFunc = async (distPath, releasePath, cachePath, pluginZipName)=>{
+;(async () => {
+  for (const sn8OrA0 of env.SN8_OR_A0_LIST.split(',')) {
+    const pluginZipName = `${env.PLUGIN_TYPE}_${sn8OrA0}_${dayjs().format(
+      'YYYYMMDD'
+    )}00.zip` // 插件包名称
+    const distPath = path.resolve(__dirname, `../dist`) // 打包产物目录
+    const releasePath = path.resolve(__dirname, '../release')
+    const cachePath = path.resolve(releasePath, `${env.PLUGIN_TYPE}_${sn8OrA0}`) // 复制缓存目录
     const pluginZipPath = path.resolve(releasePath, pluginZipName) // 打zip包目标目录
 
     try {
@@ -15,28 +21,6 @@ const compressFunc = async (distPath, releasePath, cachePath, pluginZipName)=>{
       console.log('插件打包成功')
     } catch (err) {
       console.log(`插件打包失败`, err)
-    }
-  }
-
-;(async () => {
-  if (env.NON_STANDARD_DEVICE === 'false') {
-    // 标准设备打包
-    const pluginZipName = `${env.DEVICE_INFO}_${dayjs().format(
-      'YYYYMMDD'
-    )}00.zip` // 插件包名称
-    const distPath = path.resolve(__dirname, `../dist/${env.DEVICE_INFO}`) // 打包产物目录
-    const releasePath = path.resolve(__dirname, '../release')
-    const cachePath = path.resolve(releasePath, env.DEVICE_INFO) // 复制缓存目录
-    await compressFunc(distPath, releasePath, cachePath, pluginZipName)
-  } else {
-    for (const a0 of env.A0_LIST.split(',')) {
-      const pluginZipName = `${env.PLUGIN_TYPE}_${a0}_${dayjs().format(
-        'YYYYMMDD'
-      )}00.zip` // 插件包名称
-      const distPath = path.resolve(__dirname, `../dist`) // 打包产物目录
-      const releasePath = path.resolve(__dirname, '../release')
-      const cachePath = path.resolve(releasePath, `${env.PLUGIN_TYPE}_${a0}`) // 复制缓存目录
-      await compressFunc(distPath, releasePath, cachePath, pluginZipName)
     }
   }
 })()
