@@ -11,7 +11,10 @@ module.exports = (_, argv) => {
     entry,
     output: {
       filename: '[name].js',
-      path: path.resolve(__dirname, 'dist', env.DEVICE_INFO),
+      path:
+        env.NON_STANDARD_DEVICE === 'false'
+          ? path.resolve(__dirname, 'dist', env.DEVICE_INFO)
+          : path.resolve(__dirname, 'dist'),
     },
     module: {
       rules,
