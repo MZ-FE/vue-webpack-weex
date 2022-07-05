@@ -51,17 +51,15 @@
 <script>
 import leftButton from 'assets/image/header/back_black@2x.png'
 import rightButton from 'assets/image/header/refresh.png'
-import { DofCell2, DofMinibar } from 'dolphin-weex-ui'
-const lottieModule = weex.requireModule('lottieModule')
+import { DofMinibar } from 'dolphin-weex-ui'
 import circle from '../../assets/lottie/circle.json'
-import egg from '../../assets/lottie/color-egg.json'
-import base from '../../mixins/base'
+import pageBase from '../../mixins/pageBase'
 
 export default {
   components: {
     DofMinibar,
   },
-  mixins: [base],
+  mixins: [pageBase],
   data() {
     return {
       word: 'it is time to develop plugins yourself',

@@ -61,14 +61,14 @@ import rightButton from 'assets/image/header/refresh.png'
 import logo from 'assets/image/logo.png'
 import { DofMinibar, DofButton } from 'dolphin-weex-ui'
 import { mapState } from 'vuex'
-import base from '../../mixins/base'
+import pageBase from '../../mixins/pageBase'
 
 export default {
   components: {
     DofMinibar,
     DofButton,
   },
-  mixins: [base],
+  mixins: [pageBase],
   data: () => ({
     subTitle: '',
     leftButton,

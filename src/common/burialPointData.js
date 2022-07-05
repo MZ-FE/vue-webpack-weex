@@ -4,7 +4,7 @@ export const commomParam = {
   bd_code: 'QT', // 事业部代码，美智没有,只能填其他QT,
   brand_name: '美的', // 品牌名称
   brand_code: 'MIDEA', // 品牌代码
-  apptype_name: 'APPTYPE_NAME', // 设备品类名称
+  apptype_name: APPTYPE_NAME, // 设备品类名称
   a0: '', // A0
 }
 

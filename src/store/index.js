@@ -1,9 +1,10 @@
 import Vuex from 'vuex'
 import { Bridge } from 'dolphin-native-bridge'
 import debugUtil from '../util/debugUtil'
-import { delay } from '../util/util'
+import { SimpleDiff } from '../util/util'
 import { commomParam } from '../common/burialPointData'
 import nativeService from '../js/nativeService'
+import { DEBOUNCE_TIME, THROTTLE_TIME } from '../config'
 
 Vue.use(Vuex)
 export default new Vuex.Store({
@@ -20,7 +21,9 @@ export default new Vuex.Store({
     otherInfo: {
       deviceModel: '', // 设备型号
     }, // 保存额外设备信息
-    timer: null, // 定时器，用于防抖
+    debounceTimer: null, // 定时器，用于防抖
+    throttleTimer: null, // 节流定时
+    throttleTempData: {}, // 操作缓存，用于记录上一次下发指令时的状态，下一次下发和新的状态进行对比（diff）然后下发有差异的属性
   },
   getters: {
     isDeviceInfoInit(state) {
@@ -46,11 +49,28 @@ export default new Vuex.Store({
     setDeviceModel(state, payload) {
       state.otherInfo.deviceModel = payload
     },
-    setTimer(state, payload) {
-      state.timer = payload
+    setDebounceTimer(state, payload) {
+      state.debounceTimer = payload
+    },
+    setThrottleTimer(state, payload) {
+      state.throttleTimer = payload
+    },
+    setThrottleTempData(state, payload) {
+      state.throttleTempData = payload
+    },
+    saveThrottleTempData(state) {
+      state.throttleTempData = { ...state.deviceDetail }
     },
   },
   actions: {
+    // 用于页面首次加载
+    async init({ dispatch, state }) {
+      await dispatch('updateDeviceInfo')
+      if (state.deviceInfo.isOnline === '0') {
+        return
+      }
+      dispatch('updateDeviceDetail', { delay: 0, isShowLoading: true })
+    },
     async updateDeviceInfo({ commit }) {
       const response = await Bridge.getDeviceInfo().catch(err => {
         debugUtil.log('updateDeviceInfo-err:', err)
@@ -60,61 +80,132 @@ export default new Vuex.Store({
       commit('setDeviceInfo', response.result)
       return response
     },
-    async updateDeviceDetail(
+    /**
+     * 查询后拿到数据延时更新
+     * @param delay number 防抖延时时间：ms
+     * @param isShowLoading boolean 是否显示loading
+     */
+    updateDeviceDetail(
       { commit, state },
-      { isShowLoading = false, delay = 0 } = {}
+      { isShowLoading = false, delay = DEBOUNCE_TIME } = {}
     ) {
-      const response = await Bridge.sendLuaRequest(
-        {
-          operation: 'luaQuery',
-          params: {},
-        },
-        isShowLoading
-      ).catch(err => {
-        debugUtil.log('updateDeviceDetail-err:', err)
-        Bridge.toast('设备状态获取失败')
-      })
-      debugUtil.log('updateDeviceDetail-res', response)
-      // 安卓苹果返回的errorCode类型不一致
-      if (parseInt(response.errorCode) !== 0) {
-        Bridge.toast('设备状态获取失败')
-        return
-      }
       // 防抖处理
-      if (state.timer) {
-        clearTimeout(state.timer)
+      if (state.debounceTimer) {
+        clearTimeout(state.debounceTimer)
       }
-      const timer = setTimeout(() => {
+      const debounceTimer = setTimeout(async () => {
+        const response = await Bridge.sendLuaRequest(
+          {
+            operation: 'luaQuery',
+            params: {},
+          },
+          false
+        ).catch(err => {
+          debugUtil.log('updateDeviceDetail-err:', err)
+          Bridge.toast('设备状态获取失败')
+        })
+        debugUtil.log('updateDeviceDetail-res', response)
+        // 安卓苹果返回的errorCode类型不一致
+        if (parseInt(response.errorCode) !== 0) {
+          Bridge.toast('设备状态获取失败')
+          return
+        }
         commit('setDeviceDetail', response.result)
       }, delay)
-      commit('setTimer', timer)
-      return response
+      commit('setDebounceTimer', debounceTimer)
     },
+    /**
+     * 发送控制指令
+     * @param params 参数
+     * @param isUpdateDetail boolean 发送控制后是否更新detail
+     * @param isThrottle boolean 是否使用节流
+     * @param controlDelay number 节流的时间参数
+     */
     async luaControl(
-      { dispatch },
-      { params = {}, updateDetail = true, updateDelay = 0 }
-    ) {
-      debugUtil.log('luaControl params:', JSON.stringify(params))
-      Bridge.showLoading()
-      const response = await Bridge.sendLuaRequest(
-        {
-          operation: 'luaControl',
-          params,
-        },
-        false
-      ).catch(() => Bridge.toast('设备控制信息发送失败'))
-      debugUtil.log('luaControl的response:', JSON.stringify(response))
-      if (updateDetail) {
-        // 立刻查有可能会拿到未更新的值，如果有发现获取的值还未更新，可以调整updateDelay的值或者与电控沟通解决a
-        await delay(updateDelay)
-        await dispatch('updateDeviceDetail')
+      { dispatch, state, commit },
+      {
+        params = {},
+        isUpdateDetail = false,
+        isThrottle = true,
+        controlDelay = THROTTLE_TIME,
       }
-      Bridge.hideLoading()
-      return response
+    ) {
+      // 不使用节流
+      if (!isThrottle) {
+        debugUtil.log('luaControl params:', JSON.stringify(params))
+        const res = await Bridge.sendLuaRequest(
+          {
+            operation: 'luaControl',
+            params,
+          },
+          false
+        ).catch(() => {
+          Bridge.toast('设备控制信息发送失败')
+        })
+        debugUtil.log('luaControl的response.errorCode:', res.errorCode)
+        if (isUpdateDetail) {
+          dispatch('updateDeviceDetail')
+        }
+        return res
+      }
+      if (!state.throttleTimer) {
+        // 如果定时器为null，直接下发
+        debugUtil.log('luaControl params:', JSON.stringify(params))
+        Bridge.sendLuaRequest(
+          {
+            operation: 'luaControl',
+            params,
+          },
+          false
+        )
+          .then(res => {
+            debugUtil.log('luaControl的response.errorCode:', res.errorCode)
+          })
+          .catch(() => {
+            Bridge.toast('设备控制信息发送失败')
+          })
+        if (isUpdateDetail) {
+          dispatch('updateDeviceDetail')
+        }
+        commit('saveThrottleTempData') // 下发之后将最新的状态保存一次
+        // 一段时间之后再diff，如果有变化就下发
+        const timer = setTimeout(async () => {
+          const controlData = SimpleDiff(
+            state.deviceDetail,
+            state.throttleTempData
+          )
+          debugUtil.log('定时器里', controlData)
+          if (!controlData) {
+            // 如果diff后没有数据改变则不做下发
+            commit('setThrottleTimer', null) // 清除一次定时器
+            return
+          }
+          debugUtil.log('luaControl params:', controlData)
+          Bridge.sendLuaRequest(
+            {
+              operation: 'luaControl',
+              params: controlData,
+            },
+            false
+          )
+            .then(res => {
+              debugUtil.log('luaControl的response.errorCode:', res.errorCode)
+            })
+            .catch(() => {
+              Bridge.toast('设备控制信息发送失败')
+            })
+          commit('saveThrottleTempData') // 下发之后将最新的状态保存一次
+          commit('setThrottleTimer', null) // 清除一次定时器
+          if (isUpdateDetail) {
+            dispatch('updateDeviceDetail')
+          }
+        }, controlDelay)
+        commit('setThrottleTimer', timer)
+      }
     },
     async sendCentralCloudRequest(
       { state },
-      { url, params = {}, option = { isShowLoading: true } }
+      { url, params = {}, option = { isShowLoading: false } }
     ) {
       debugUtil.log('sendCentralCloudRequest', url, params)
 
@@ -144,9 +235,6 @@ export default new Vuex.Store({
           serialNo: state.deviceInfo.deviceSn,
           sourceSys: 'APP',
           tm: Math.round(new Date().getTime() / 1000),
-        },
-        option: {
-          isShowLoading: false,
         },
       }).catch(error => {
         debugUtil.log('updateDeviceModel-err', error)
