@@ -49,6 +49,7 @@
         size="big"
         @dofButtonClicked="jumpTo"
       ></dof-button>
+      <mz-slider-bar />
     </div>
     <div class="footer">
       <text class="copyright">&copy;Midea IOT software</text>
@@ -62,11 +63,14 @@ import logo from 'assets/image/logo.png'
 import { DofMinibar, DofButton } from 'dolphin-weex-ui'
 import { mapState } from 'vuex'
 import pageBase from '../../mixins/pageBase'
+import debugUtil from '../../util/debugUtil'
+import { MzSliderBar } from 'mz-weex-ui'
 
 export default {
   components: {
     DofMinibar,
     DofButton,
+    MzSliderBar,
   },
   mixins: [pageBase],
   data: () => ({
@@ -82,6 +86,16 @@ export default {
       letterSpacing: 0,
     },
   }),
+  async created() {
+    await this.init()
+    this.$bridge.addEventListener('receiveMessage', data => {
+      this.updateDeviceDetail({ delay: 2000 })
+      debugUtil.log('receiveMessage', data)
+    })
+    this.$bridge.addEventListener('receiveMessageFromApp', data => {
+      debugUtil.log('receiveMessageFromApp', data)
+    })
+  },
   mounted() {
     this.subTitle = 'Midea 模版项目'
   },

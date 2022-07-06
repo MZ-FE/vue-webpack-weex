@@ -1,17 +1,21 @@
 import Vuex from 'vuex'
 import { Bridge } from 'dolphin-native-bridge'
 import debugUtil from '../util/debugUtil'
-import { SimpleDiff } from '../util/util'
+import { SimpleDiff, commandInterfaceWrapper } from '../util'
 import { commomParam } from '../common/burialPointData'
-import nativeService from '../js/nativeService'
 import { DEBOUNCE_TIME, THROTTLE_TIME } from '../config'
+import merge from 'lodash-es/merge.js'
 
 Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     title: 'Dolphin Weex',
     deviceInfo: {},
-    deviceDetail: {},
+    deviceDetail: {
+      gatewayDeviceInfo: {},
+    }, // 云端、网关端保存的当前设备信息
+    userInfo: {}, // 用户信息
+    homeInfo: {}, // 家庭信息
     productCode: '', // 产品型号/设备型号
     trackInfo: {
       // 埋点公共信息
@@ -43,6 +47,15 @@ export default new Vuex.Store({
     setDeviceDetail(state, payload) {
       state.deviceDetail = payload
     },
+    setGatewayDeviceInfo(state, payload) {
+      state.deviceDetail.gatewayDeviceInfo = payload
+    },
+    setUserInfo(state, payload) {
+      state.userInfo = payload
+    },
+    setHomeInfo(state, payload) {
+      state.homeInfo = payload
+    },
     setTrackInfo(state, payload) {
       Object.assign(state.trackInfo, payload)
     },
@@ -66,9 +79,6 @@ export default new Vuex.Store({
     // 用于页面首次加载
     async init({ dispatch, state }) {
       await dispatch('updateDeviceInfo')
-      if (state.deviceInfo.isOnline === '0') {
-        return
-      }
       dispatch('updateDeviceDetail', { delay: 0, isShowLoading: true })
     },
     async updateDeviceInfo({ commit }) {
@@ -78,6 +88,24 @@ export default new Vuex.Store({
       })
       debugUtil.log('updateDeviceInfo:', response)
       commit('setDeviceInfo', response.result)
+      return response
+    },
+    async updateUserInfo({ commit }) {
+      const response = await Bridge.getUserInfo().catch(() =>
+        Bridge.toast('获取用户信息失败', 1.5)
+      )
+
+      debugUtil.log('updateUserInfo', response)
+
+      commit('setUserInfo', response)
+      return response
+    },
+    async updateHomeInfo({ commit }) {
+      const response = await Bridge.getCurrentHomeInfo().catch(() =>
+        Bridge.toast('获取家庭信息失败', 1.5)
+      )
+      debugUtil.log('updateHomeInfo', response)
+      commit('setHomeInfo', response)
       return response
     },
     /**
@@ -203,27 +231,73 @@ export default new Vuex.Store({
         commit('setThrottleTimer', timer)
       }
     },
+    /**
+     * 中台接口调用
+     * @param state
+     * @param url 接口名称
+     * @param params 接口参数
+     * @param option 接口调用设置
+     */
     async sendCentralCloudRequest(
       { state },
-      { url, params = {}, option = { isShowLoading: false } }
+      { url, params = {}, option = { isShowLoading: true } }
     ) {
+      let data = merge(
+          {
+            method: 'POST',
+          },
+          params
+        ),
+        res = await Bridge.sendCentralCloudRequest(url, data, option).catch(
+          error => {
+            debugUtil.log('sendCentralCloudRequest-err', error)
+            return error
+          }
+        )
+
       debugUtil.log('sendCentralCloudRequest', url, params)
-
-      let res = await Bridge.sendCentralCloudRequest(
-        url,
-        {
-          method: 'POST',
-          data: params,
-        },
-        option
-      ).catch(error => {
-        debugUtil.log('sendCentralCloudRequest-err', url, error)
-        return error
-      })
-
-      debugUtil.log('sendCentralCloudRequest-res', url, res)
+      debugUtil.log('sendCentralCloudRequest-res', res)
 
       return res
+    },
+    /**
+     * 物模型指令接口封装
+     * @param url 只需要传入【/v1/appliance/operation/】与【/{applianceCode}】的url即可，applianceCode默认为
+     * 对于网关子设备， url中的applianceCode传所属网关Id
+     * @param params 默认Post方法
+     */
+    async sendModelCommand({ state }, { url, params = {} }) {
+      let msgId = Bridge.genMessageId()
+
+      let { deviceId } = state.deviceInfo
+
+      let option = merge(
+        {
+          method: 'POST',
+          data: {
+            msgId: msgId,
+            deviceId: deviceId,
+          },
+        },
+        params
+      )
+
+      let reqUrl = `/v1/appliance/operation/${url}/${option.data.deviceId}`
+
+      debugUtil.log('sendModelCommand-req:', reqUrl, option)
+      // 网关子设备 调用物模型接口，url中的applicationCode必须使用网关Id
+      let res = await Bridge.sendCentralCloudRequest(reqUrl, option).catch(
+        err => {
+          debugUtil.log('sendModelCommand-err', reqUrl, err)
+          return err
+        }
+      )
+
+      debugUtil.log('sendModelCommand-res：', reqUrl, res)
+      return {
+        isSuccess: res.code === '0',
+        ...res,
+      }
     },
     /**
      * 获取产品型号信息
@@ -279,7 +353,7 @@ export default new Vuex.Store({
       //自定义参数obj增量替换通用参数eventParams
       Object.assign(params.eventParams, eventParams)
       debugUtil.log('setBurialPoint-params', params)
-      let res = await nativeService.commandInterfaceWrapper(params)
+      let res = await commandInterfaceWrapper(params)
       debugUtil.log('setBurialPoint-res', res)
 
       return res

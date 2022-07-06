@@ -1,6 +1,6 @@
 import { mapActions } from 'vuex'
 import { Bridge } from 'dolphin-native-bridge'
-import { getParameterByName } from '../util/util'
+import { getParameterByName } from '../util'
 
 // 子组件的基础混入
 export default {

@@ -96,15 +96,6 @@ let dolphinweex = {
     })
   },
   install(Vue, options) {
-    let that = dolphinweex
-    Vue.mixin({
-      components: {
-        'dof-minibar': DofMinibar,
-      },
-      created() {
-        // this.$toast('dolphinweex')
-      },
-    })
     Vue.prototype.$native = Bridge
     Vue.prototype.$bridge = Bridge
     Vue.prototype.$util = Utils

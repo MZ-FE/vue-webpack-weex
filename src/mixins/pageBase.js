@@ -2,7 +2,7 @@ import debugUtil from 'src/util/debugUtil'
 import { DofMinibar } from 'dolphin-weex-ui'
 import { Bridge } from 'dolphin-native-bridge'
 import { mapActions, mapMutations } from 'vuex'
-import { getParameterByName } from '../util/util'
+import { getParameterByName } from '../util'
 
 const bundleUrl = weex.config.bundleUrl
 const srcFileName = bundleUrl.substring(
@@ -29,16 +29,6 @@ export default {
     pageHeight() {
       return (750 / weex.config.env.deviceWidth) * weex.config.env.deviceHeight
     },
-  },
-  async created() {
-    await this.init()
-    this.$bridge.addEventListener('receiveMessage', data => {
-      this.updateDeviceDetail({ delay: 2000 })
-      debugUtil.log('receiveMessage', data)
-    })
-    this.$bridge.addEventListener('receiveMessageFromApp', data => {
-      debugUtil.log('receiveMessageFromApp', data)
-    })
   },
   methods: {
     ...mapMutations(['setTrackInfo']),
@@ -86,7 +76,6 @@ export default {
       this.appearCount--
       this.$storage.setStorage('appearCount', this.appearCount)
       debugUtil.log('appearCount', this.appearCount)
-      debugUtil.resetDebugLog()
     },
     getParameterByName,
     back() {
