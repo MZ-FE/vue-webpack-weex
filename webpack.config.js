@@ -5,6 +5,8 @@ const env = require('dotenv').config().parsed
 const entry = require('./build/makeEntryFile')
 const rules = require('./build/webpackLoaders')
 const plugins = require('./build/webpackPlugins')
+const BundleAnalyzerPlugin =
+  require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 
 module.exports = (_, argv) => {
   const commonConfig = {
@@ -32,11 +34,24 @@ module.exports = (_, argv) => {
     },
   }
   if (argv.mode === 'development') {
-    return merge(commonConfig, { mode: 'development' })
+    return merge(commonConfig, {
+      mode: 'development',
+      plugins: [
+        // 打包大小可视化分析
+        new BundleAnalyzerPlugin({
+          analyzerMode:
+            env.DEV_BUNDULE_ANALYZEER === 'true' ? 'server' : 'disabled',
+        }),
+      ],
+    })
   }
   return merge(commonConfig, {
     mode: 'production',
     plugins: [
+      new BundleAnalyzerPlugin({
+        analyzerMode: argv.analyze ? 'static' : 'disabled',
+        generateStatsFile: !!argv.analyze,
+      }),
       // 打包完成后退出，可以继续执行后续的的脚本
       {
         apply: compiler => {
