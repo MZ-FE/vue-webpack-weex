@@ -1,5 +1,4 @@
 const storage = weex.requireModule('storage')
-const modal = weex.requireModule('modal')
 
 /**
  * 存储localStorage

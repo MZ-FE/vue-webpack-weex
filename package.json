@@ -15,15 +15,13 @@
     "build:zip": "npm run clean:all && webpack --mode=production && node ./build/zip.js",
     "build:analyze": "npm run clean:all && webpack --mode=production --analyze",
     "clean:all": "rimraf ./entry && rimraf ./dist && rimraf ./release",
-    "lint": "eslint --ext .js,.vue src",
-    "lint:fix": "eslint --ext .js,.vue src --fix",
+    "lint": "eslint --ext .js,.vue src --fix",
     "prepare": "husky install",
     "cz": "cz",
     "release": "standard-version",
     "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0 && git add CHANGELOG.md",
     "prettier": "prettier --write \"src/\"",
-    "adb": "node ./build/adb",
-    "analyze": "webpack-bundle-analyzer --port 8888 ./dist/stats.json"
+    "adb": "node ./build/adb"
   },
   "config": {
     "commitizen": {

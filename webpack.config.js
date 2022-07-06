@@ -40,7 +40,7 @@ module.exports = (_, argv) => {
         // 打包大小可视化分析
         new BundleAnalyzerPlugin({
           analyzerMode:
-            env.DEV_BUNDULE_ANALYZEER === 'true' ? 'server' : 'disabled',
+            env.DEV_BUNDULE_ANALYZE === 'true' ? 'server' : 'disabled',
         }),
       ],
     })

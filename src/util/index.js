@@ -1,25 +1,3 @@
-const bridgeModule = weex.requireModule('bridgeModule')
-
-export function deciToBin(num) {
-  //十进制转二进制
-  return num.toString(2)
-}
-export function binToDeci(num) {
-  //二进制转十进制
-  return parseInt(num, 2)
-}
-//函数防抖
-export function debounce(fn, delay) {
-  let timer = null
-  return function (...args) {
-    if (timer) {
-      clearTimeout(timer)
-    }
-    timer = setTimeout(() => {
-      func.apply(this, args)
-    }, delay)
-  }
-}
 // 延时
 export function delay(ms) {
   return new Promise(resolve => {
@@ -60,25 +38,4 @@ export function SimpleDiff(newObj, oldObj) {
     return null
   }
   return ret
-}
-
-// 统一JS->Native接口
-export function commandInterfaceWrapper(param) {
-  return new Promise((resolve, reject) => {
-    bridgeModule.commandInterface(
-      JSON.stringify(param),
-      resData => {
-        resolve(this.convertToJson(resData))
-      },
-      error => {
-        reject(error)
-      }
-    )
-  })
-}
-
-export default {
-  deciToBin,
-  binToDeci,
-  debounce,
 }

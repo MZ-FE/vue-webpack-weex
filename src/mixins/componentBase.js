@@ -8,7 +8,7 @@ export default {
     ...mapActions(['updateDeviceInfo', 'updateDeviceDetail', 'setBurialPoint']),
     back() {
       //返回上一页
-      Bridge.goBack()
+      this.$pop()
     },
     exit() {
       Bridge.backToNative()

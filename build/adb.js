@@ -8,9 +8,9 @@ for (const sn8OrA0 of env.SN8_OR_A0_LIST.split(',')) {
   )
   cp.exec(
     `adb push "dist/." "/storage/emulated/0/Android/data/com.midea.ai.appliances/files/MideaHome/${env.PLUGIN_TYPE}_${sn8OrA0}/"`,
-    err => {
+    (err, stdout) => {
       if (err) {
-        console.log('adb推送失败：', err)
+        console.log('adb推送失败：', stdout)
       }
     }
   )

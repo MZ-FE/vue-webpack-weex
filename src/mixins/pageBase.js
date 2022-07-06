@@ -80,7 +80,7 @@ export default {
     getParameterByName,
     back() {
       //返回上一页
-      Bridge.goBack()
+      this.$pop()
     },
     exit() {
       Bridge.backToNative()
