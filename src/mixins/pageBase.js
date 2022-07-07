@@ -24,6 +24,7 @@ export default {
     srcFileName: srcFileName,
     pluginVersion: PLUGIN_VERSION,
     appearCount: 0,
+    disappearLock: false, // 调用一次disappear之后设成true，防止二次调用
   }),
   computed: {
     pageHeight() {
@@ -73,8 +74,12 @@ export default {
       }, 1000)
     },
     viewdisappear() {
-      this.appearCount--
-      this.$storage.setStorage('appearCount', this.appearCount)
+      // 在超级菜单页退出的时候，改方法会被调用两次，需要防止调用两次
+      if (!this.disappearLock) {
+        this.appearCount--
+        this.disappearLock = true
+        this.$storage.setStorage('appearCount', this.appearCount)
+      }
       debugUtil.log('appearCount', this.appearCount)
     },
     getParameterByName,

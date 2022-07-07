@@ -56,6 +56,9 @@ export default new Vuex.Store({
     setDeviceDetail(state, payload) {
       state.deviceDetail = payload
     },
+    mergeDeviceDetail(state, payload) {
+      state.deviceDetail = { ...state.deviceDetail, ...payload }
+    },
     setTrackInfo(state, payload) {
       Object.assign(state.trackInfo, payload)
     },
@@ -174,6 +177,10 @@ export default new Vuex.Store({
      * @param isUpdateDetail boolean 发送控制后是否更新detail
      * @param isThrottle boolean 是否使用节流
      * @param controlDelay number 节流的时间参数
+     * @param burialPointParams 埋点信息
+     * @param burialPointParams.object string 埋点信息
+     * @param burialPointParams.value string 埋点信息
+     * @param burialPointParams.ex_value string 埋点信息
      */
     async luaControl(
       { dispatch, state, commit },
@@ -182,11 +189,16 @@ export default new Vuex.Store({
         isUpdateDetail = false,
         isThrottle = true,
         controlDelay = THROTTLE_TIME,
+        burialPointParams,
       }
     ) {
       // 通用下发指令操作
-      const controlFunc = async () => {
+      const controlFunc = async params => {
         debugUtil.log('luaControl params:', JSON.stringify(params))
+        // 埋点
+        if (burialPointParams) {
+          dispatch('setFuncClickCheckBurialPoint', burialPointParams)
+        }
         const res = await Bridge.sendLuaRequest(
           {
             operation: 'luaControl',
@@ -197,6 +209,14 @@ export default new Vuex.Store({
           Bridge.showToast('设备控制信息发送失败')
         })
         debugUtil.log('luaControl的response.errorCode:', res.errorCode)
+        // 埋点
+        if (burialPointParams) {
+          dispatch('setFuncClickResultBurialPoint', {
+            ...burialPointParams,
+            result: parseInt(res.errorCode) === 0 ? '成功' : '失败',
+            fail_reason: parseInt(res.errorCode) === 0 ? '' : res.errorCode,
+          })
+        }
         if (isUpdateDetail) {
           dispatch('updateDeviceDetail')
         }
@@ -204,13 +224,13 @@ export default new Vuex.Store({
 
       // 不使用节流
       if (!isThrottle) {
-        await controlFunc()
+        await controlFunc(params)
         return
       }
-      if (throttleTimer) {
+      if (!throttleTimer) {
         // 如果定时器为null，先保存一次数据，然后下发
         commit('saveThrottleTempData')
-        await controlFunc()
+        await controlFunc(params)
         // 一段时间之后再diff，如果有变化就再次下发
         throttleTimer = setTimeout(async () => {
           const controlData = SimpleDiff(
@@ -224,7 +244,7 @@ export default new Vuex.Store({
           }
           // 数据有变化，先保存一次数据，然后下发
           commit('saveThrottleTempData')
-          await controlFunc()
+          await controlFunc(controlData)
           throttleTimer = null // 定时器逻辑执行完成，清除定时器id
         }, controlDelay)
       }
@@ -427,6 +447,47 @@ export default new Vuex.Store({
       Object.assign(params.eventParams, eventParams)
       debugUtil.log('setBurialPoint-params', params)
       Bridge.trackEvent(params)
+    },
+    /**
+     * plugin_function_click_check埋点
+     * @param dispatch
+     * @param burialPointParams 埋点信息
+     * @param burialPointParams.object string 埋点信息
+     * @param burialPointParams.value string 埋点信息
+     * @param burialPointParams.ex_value string 埋点信息
+     */
+    setFuncClickCheckBurialPoint({ dispatch }, burialPointParams) {
+      dispatch('setBurialPoint', {
+        event: event.plugin_function_click_check,
+        eventParams: {
+          object: burialPointParams.object,
+          ex_value: burialPointParams.ex_value,
+          value: burialPointParams.value,
+          is_legal: '是',
+        },
+      })
+    },
+    /**
+     * plugin_function_click_result埋点
+     * @param dispatch
+     * @param burialPointParams 埋点信息
+     * @param burialPointParams.object string 埋点信息
+     * @param burialPointParams.value string 埋点信息
+     * @param burialPointParams.ex_value string 埋点信息
+     * @param burialPointParams.result string 控制结果
+     * @param burialPointParams.fail_reason string 失败原因
+     */
+    setFuncClickResultBurialPoint({ dispatch }, burialPointParams) {
+      dispatch('setBurialPoint', {
+        event: event.plugin_function_click_result,
+        eventParams: {
+          object: burialPointParams.object,
+          ex_value: burialPointParams.ex_value,
+          value: burialPointParams.value,
+          result: burialPointParams.result,
+          fail_reason: burialPointParams.fail_reason,
+        },
+      })
     },
   },
 })
