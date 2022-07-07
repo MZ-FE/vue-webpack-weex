@@ -4,10 +4,14 @@ import debugUtil from '../util/debugUtil'
 import { SimpleDiff } from '../util'
 import { commomParam } from '../common/burialPointData'
 import { DEBOUNCE_TIME, THROTTLE_TIME } from '../config'
-import merge from 'lodash-es/merge.js'
+import merge from 'lodash-es/merge'
 import dayjs from 'dayjs'
 
 Vue.use(Vuex)
+
+let debounceTimer = null
+let throttleTimer = null
+
 export default new Vuex.Store({
   state: {
     deviceInfo: {},
@@ -23,8 +27,6 @@ export default new Vuex.Store({
     otherInfo: {
       deviceModel: '', // 设备型号
     }, // 保存额外设备信息
-    debounceTimer: null, // 定时器，用于防抖
-    throttleTimer: null, // 节流定时
     throttleTempData: {}, // 操作缓存，用于记录上一次下发指令时的状态，下一次下发和新的状态进行对比（diff）然后下发有差异的属性
   },
   getters: {
@@ -59,12 +61,6 @@ export default new Vuex.Store({
     },
     setDeviceModel(state, payload) {
       state.otherInfo.deviceModel = payload
-    },
-    setDebounceTimer(state, payload) {
-      state.debounceTimer = payload
-    },
-    setThrottleTimer(state, payload) {
-      state.throttleTimer = payload
     },
     setThrottleTempData(state, payload) {
       state.throttleTempData = payload
@@ -116,37 +112,42 @@ export default new Vuex.Store({
     },
     /**
      * 查询后拿到数据延时更新
+     * @param commit
      * @param delay number 防抖延时时间：ms
      * @param isShowLoading boolean 是否显示loading
      */
     updateDeviceDetail(
-      { commit, state },
+      { commit },
       { isShowLoading = false, delay = DEBOUNCE_TIME } = {}
     ) {
-      // 防抖处理
-      if (state.debounceTimer) {
-        clearTimeout(state.debounceTimer)
-      }
-      const debounceTimer = setTimeout(async () => {
-        const response = await Bridge.sendLuaRequest(
-          {
-            operation: 'luaQuery',
-            params: {},
-          },
-          false
-        ).catch(err => {
-          debugUtil.log('updateDeviceDetail-err:', err)
-          Bridge.showToast('设备状态获取失败')
-        })
-        debugUtil.log('updateDeviceDetail-res', response)
-        // 安卓苹果返回的errorCode类型不一致
-        if (parseInt(response.errorCode) !== 0) {
-          Bridge.showToast('设备状态获取失败')
-          return
+      return new Promise((resolve, reject) => {
+        // 防抖处理
+        if (debounceTimer) {
+          clearTimeout(debounceTimer)
         }
-        commit('setDeviceDetail', response.result)
-      }, delay)
-      commit('setDebounceTimer', debounceTimer)
+        debounceTimer = setTimeout(async () => {
+          const res = await Bridge.sendLuaRequest(
+            {
+              operation: 'luaQuery',
+              params: {},
+            },
+            false
+          ).catch(err => {
+            debugUtil.log('updateDeviceDetail-err:', err)
+            reject(err)
+            Bridge.showToast('设备状态获取失败')
+          })
+          debugUtil.log('updateDeviceDetail-res', res)
+          // 安卓苹果返回的errorCode类型不一致
+          if (parseInt(res.errorCode) !== 0) {
+            Bridge.showToast('设备状态获取失败')
+            reject(res)
+            return
+          }
+          resolve(res.result)
+          commit('setDeviceDetail', res.result)
+        }, delay)
+      })
     },
     /**
      * 网关设备更新设备详情数据
@@ -183,8 +184,8 @@ export default new Vuex.Store({
         controlDelay = THROTTLE_TIME,
       }
     ) {
-      // 不使用节流
-      if (!isThrottle) {
+      // 通用下发指令操作
+      const controlFunc = async () => {
         debugUtil.log('luaControl params:', JSON.stringify(params))
         const res = await Bridge.sendLuaRequest(
           {
@@ -199,61 +200,33 @@ export default new Vuex.Store({
         if (isUpdateDetail) {
           dispatch('updateDeviceDetail')
         }
-        return res
       }
-      if (!state.throttleTimer) {
-        // 如果定时器为null，直接下发
-        debugUtil.log('luaControl params:', JSON.stringify(params))
-        Bridge.sendLuaRequest(
-          {
-            operation: 'luaControl',
-            params,
-          },
-          false
-        )
-          .then(res => {
-            debugUtil.log('luaControl的response.errorCode:', res.errorCode)
-          })
-          .catch(() => {
-            Bridge.showToast('设备控制信息发送失败')
-          })
-        if (isUpdateDetail) {
-          dispatch('updateDeviceDetail')
-        }
-        commit('saveThrottleTempData') // 下发之后将最新的状态保存一次
-        // 一段时间之后再diff，如果有变化就下发
-        const timer = setTimeout(async () => {
+
+      // 不使用节流
+      if (!isThrottle) {
+        await controlFunc()
+        return
+      }
+      if (throttleTimer) {
+        // 如果定时器为null，先保存一次数据，然后下发
+        commit('saveThrottleTempData')
+        await controlFunc()
+        // 一段时间之后再diff，如果有变化就再次下发
+        throttleTimer = setTimeout(async () => {
           const controlData = SimpleDiff(
             state.deviceDetail,
             state.throttleTempData
           )
-          debugUtil.log('定时器里', controlData)
           if (!controlData) {
             // 如果diff后没有数据改变则不做下发
-            commit('setThrottleTimer', null) // 清除一次定时器
+            throttleTimer = null // 清除定时器id
             return
           }
-          debugUtil.log('luaControl params:', controlData)
-          Bridge.sendLuaRequest(
-            {
-              operation: 'luaControl',
-              params: controlData,
-            },
-            false
-          )
-            .then(res => {
-              debugUtil.log('luaControl的response.errorCode:', res.errorCode)
-            })
-            .catch(() => {
-              Bridge.showToast('设备控制信息发送失败')
-            })
-          commit('saveThrottleTempData') // 下发之后将最新的状态保存一次
-          commit('setThrottleTimer', null) // 清除一次定时器
-          if (isUpdateDetail) {
-            dispatch('updateDeviceDetail')
-          }
+          // 数据有变化，先保存一次数据，然后下发
+          commit('saveThrottleTempData')
+          await controlFunc()
+          throttleTimer = null // 定时器逻辑执行完成，清除定时器id
         }, controlDelay)
-        commit('setThrottleTimer', timer)
       }
     },
     async sendCentralCloudRequest(
@@ -437,7 +410,6 @@ export default new Vuex.Store({
       }
 
       let params = {
-        operation: 'trackEvent',
         event: event,
         eventParams: {
           ...commomParam,
@@ -454,11 +426,7 @@ export default new Vuex.Store({
       //自定义参数obj增量替换通用参数eventParams
       Object.assign(params.eventParams, eventParams)
       debugUtil.log('setBurialPoint-params', params)
-      // todo: 使用Bridge.trackEvent进行埋点
-      // let res = await nativeService.commandInterfaceWrapper(params)
-      // debugUtil.log('setBurialPoint-res', res)
-
-      // return res
+      Bridge.trackEvent(params)
     },
   },
 })
