@@ -4,7 +4,7 @@ import debugUtil from '../util/debugUtil'
 import { SimpleDiff } from '../util'
 import { commomParam } from '../common/burialPointData'
 import { DEBOUNCE_TIME, THROTTLE_TIME } from '../config'
-import merge from 'lodash-es/merge'
+import merge from 'lodash/merge'
 import dayjs from 'dayjs'
 
 Vue.use(Vuex)

@@ -1,8 +1,9 @@
 import debugUtil from 'src/util/debugUtil'
 import { DofMinibar } from 'dolphin-weex-ui'
 import { Bridge } from 'dolphin-native-bridge'
-import { mapActions, mapMutations } from 'vuex'
+import { mapActions, mapMutations, mapState } from 'vuex'
 import { getParameterByName } from '../util'
+import { event } from '../common/burialPointData'
 
 const bundleUrl = weex.config.bundleUrl
 const srcFileName = bundleUrl.substring(
@@ -27,6 +28,7 @@ export default {
     disappearLock: false, // 调用一次disappear之后设成true，防止二次调用
   }),
   computed: {
+    ...mapState(['deviceInfo']),
     pageHeight() {
       return (750 / weex.config.env.deviceWidth) * weex.config.env.deviceHeight
     },
@@ -66,7 +68,7 @@ export default {
       // 由于安卓端viewappear事件比created早触发，可能会出现初始化信息获取不到的情况，延迟触发埋点
       setTimeout(() => {
         this.setBurialPoint({
-          event: 'plugin_page_view',
+          event: event.plugin_page_view,
           eventParams: {
             refer_name: referPageName || '美居首页',
           },

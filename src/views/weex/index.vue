@@ -19,7 +19,7 @@
         ></image>
       </div>
       <div slot="right" class="right-img-wrapper">
-        <image :src="rightButton" style="height: 32px; width: 32px"></image>
+        <image :src="more" style="height: 32px; width: 32px"></image>
       </div>
     </dof-minibar>
     <div class="center margin-top-80">
@@ -57,14 +57,16 @@
   </div>
 </template>
 <script>
-import leftButton from 'assets/image/header/back_black@2x.png'
-import rightButton from 'assets/image/header/refresh.png'
-import logo from 'assets/image/logo.png'
-import { DofMinibar, DofButton } from 'dolphin-weex-ui'
+import leftButton from '../../assets/image/header/back_black@2x.png'
+import logo from '../../assets/image/logo.png'
+import more from '../../assets/image/header/more_black.png'
 import { mapState } from 'vuex'
+import { MzSliderBar } from 'mz-weex-ui'
+import { event } from '../../common/burialPointData'
+import { DofMinibar, DofButton } from 'dolphin-weex-ui'
 import pageBase from '../../mixins/pageBase'
 import debugUtil from '../../util/debugUtil'
-import { MzSliderBar } from 'mz-weex-ui'
+import superMoreUtil from '../../util/superMoreUtil'
 
 export default {
   components: {
@@ -76,7 +78,7 @@ export default {
   data: () => ({
     subTitle: '',
     leftButton,
-    rightButton,
+    more,
     logo,
     version: PLUGIN_VERSION,
     headerStyle: {
@@ -84,6 +86,16 @@ export default {
       fontWeight: '900',
       fontSize: '28px',
       letterSpacing: 0,
+    },
+    //超级菜单参数
+    superMoreUtil: {
+      // pluginData：插件信息
+      pluginData: {
+        version: PLUGIN_VERSION,
+        showCommonQuestion: true,
+      },
+      routerConfigUrl: weex.config.bundleUrl.split('weex.js')[0] + 'more.js',
+      bluetoothEnter: false,
     },
   }),
   async created() {
@@ -111,7 +123,24 @@ export default {
       this.back()
     },
     minibarRightButtonClick() {
-      this.$reload()
+      // 埋点
+      this.setBurialPoint({
+        event: event.plugin_button_click,
+        eventParams: {
+          element_content: '更多',
+        },
+      })
+      // 打开超级菜单，若不支持则执行调用函数
+      superMoreUtil.open(
+        {
+          deviceId: this.deviceInfo.deviceId,
+          ...this.superMoreUtil,
+        },
+        () => {
+          // 插件菜单原逻辑
+          this.$toast('版本不支持,请升级您的美居app')
+        }
+      )
     },
     toast() {
       this.$toast(JSON.stringify(this.trackInfo))
