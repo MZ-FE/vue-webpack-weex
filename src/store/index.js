@@ -230,7 +230,7 @@ export default new Vuex.Store({
       if (!throttleTimer) {
         // 如果定时器为null，先保存一次数据，然后下发
         commit('saveThrottleTempData')
-        await controlFunc(params)
+        controlFunc(params)
         // 一段时间之后再diff，如果有变化就再次下发
         throttleTimer = setTimeout(async () => {
           const controlData = SimpleDiff(
