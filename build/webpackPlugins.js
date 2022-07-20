@@ -3,6 +3,8 @@ const webpack = require('webpack')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const env = require('dotenv').config().parsed
 const _ = require('lodash')
+const CopyPlugin = require('copy-webpack-plugin')
+const VersionWebpackPlugin = require('./VersionWebpackPlugin')
 
 const pageName = {}
 Object.keys(env).forEach(key => {
@@ -11,9 +13,14 @@ Object.keys(env).forEach(key => {
   }
 })
 
+const PLUGIN_VERSION = JSON.stringify(dayjs().format('YYYY.MMDD.HHmm'))
+
 module.exports = [
+  new CopyPlugin({
+    patterns: [{ from: 'public', to: 'public' }],
+  }),
   new webpack.DefinePlugin({
-    PLUGIN_VERSION: JSON.stringify(dayjs().format('YYYY.MMDD.HHmm')),
+    PLUGIN_VERSION,
     PAGE_NAME: JSON.stringify(pageName),
     APPTYPE_NAME: JSON.stringify(env.APPTYPE_NAME),
   }),
@@ -21,5 +28,8 @@ module.exports = [
   new webpack.BannerPlugin({
     banner: '// { "framework": "Vue" }\n',
     raw: true,
+  }),
+  new VersionWebpackPlugin({
+    version: JSON.parse(PLUGIN_VERSION),
   }),
 ]
