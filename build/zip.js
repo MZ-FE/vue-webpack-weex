@@ -6,9 +6,10 @@ const env = require('dotenv').config().parsed
 
 ;(async () => {
   for (const sn8OrA0 of env.SN8_OR_A0_LIST.split(',')) {
-    const pluginZipName = `${env.PLUGIN_TYPE}_${sn8OrA0}_${dayjs().format(
-      'YYYYMMDD'
-    )}00.zip` // 插件包名称
+    const pkgPath = path.join(__dirname, '../package.json')
+    let pkg = fse.readFileSync(pkgPath)
+    pkg = JSON.parse(pkg)
+    const pluginZipName = `${env.PLUGIN_TYPE}_${sn8OrA0}_${pkg.version}.zip` // 插件包名称
     const distPath = path.resolve(__dirname, `../dist`) // 打包产物目录
     const releasePath = path.resolve(__dirname, '../release')
     const cachePath = path.resolve(releasePath, `${env.PLUGIN_TYPE}_${sn8OrA0}`) // 复制缓存目录
