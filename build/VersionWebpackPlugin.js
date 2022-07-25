@@ -22,12 +22,11 @@ class VersionWebpackPlugin {
     this.options = options
   }
 
-  // 在插件函数的 prototype 上定义一个 `apply` 方法，以 compiler 为参数。
   apply(compiler) {
     compiler.hooks.done.tap(
-      'Hello World Plugin',
-      (stats /* 绑定 done 钩子后，stats 会作为参数传入。 */) => {
-        console.log('Hello World!')
+      'EditPackageJSONVersionPlugin',
+      () => {
+        console.log('\n打包完成，更新package.json!')
         const pkgPath = path.join(__dirname, '../package.json')
         let pkg = fs.readFileSync(pkgPath)
         pkg = JSON.parse(pkg)

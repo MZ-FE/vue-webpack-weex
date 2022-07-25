@@ -32,10 +32,17 @@ module.exports = (_, argv) => {
         assets: path.resolve(__dirname, 'src/assets'),
       },
     },
+    stats: {
+      warnings: false,
+      modules: false,
+    },
   }
   if (argv.mode === 'development') {
     return merge(commonConfig, {
       mode: 'development',
+      watchOptions: {
+        ignored: /package.json/,
+      },
       plugins: [
         // 打包大小可视化分析
         new BundleAnalyzerPlugin({
