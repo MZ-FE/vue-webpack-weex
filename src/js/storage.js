@@ -1,53 +1,73 @@
 const storage = weex.requireModule('storage')
 
 /**
- * 存储localStorage
- * @param key
- * @param value
- * @param duration Storage有效时间，单位：小时
- * @param set_time 是否设置时间
- * @returns {boolean}
+ * 缓存set
+ * @param key {string} 键
+ * @param value {any} 值
+ * @param [duration] {number} Storage有效时间，留空无限期，单位：ms
+ * @returns promise
  */
-const setStorage = (key, value, callback, set_time = false, duration = 0) => {
-  if (!key) return
-  if (typeof value !== 'string') {
-    value = JSON.stringify(value)
-  }
-  try {
-    if (set_time) {
-      let date = new Date()
-      if (duration > 0) {
-        value += '&' + (date.getTime() + duration * 3600 * 1e3)
-      } else {
-        value += '&0'
-      }
-      value += '&' + date.getTime()
+const setStorage = (key, value, duration) => {
+  return new Promise((resolve, reject) => {
+    if (!key) {
+      reject('key is empty !')
+      return
     }
-    storage.setItem(key, value, callback)
-  } catch (error) {
-    console.error(error)
-    reject(error)
-  }
-}
-const getStorage = (key, parse = false) => {
-  if (!key) return false
-  try {
-    if (parse) {
-      if (typeof storage.getItem(key) === 'string') {
-        return JSON.parse(storage.getItem(key))
-      }
+    const storageData = {
+      value,
+      duration: duration ? duration : null,
     }
-    return new Promise((resolve, reject) => {
-      storage.getItem(key, event => {
-        event.result === 'success'
-          ? resolve(event.data)
-          : reject(`key: "${key}" not found`)
+    const json = JSON.stringify(storageData)
+    try {
+      storage.setItem(key, json, event => {
+        if (event.result === 'success') {
+          // event.data 为undefined, 故返回完整的event
+          resolve(event)
+        } else {
+          reject(event)
+        }
       })
-    })
-  } catch (error) {
-    console.error(error)
-    reject(error)
-  }
+    } catch (error) {
+      console.error(error)
+      reject(error)
+    }
+  })
+}
+
+/**
+ * 缓存get
+ * @param key {string} 键
+ * @returns promise
+ */
+const getStorage = key => {
+  return new Promise((resolve, reject) => {
+    if (!key) {
+      reject('key is empty !')
+      return
+    }
+    try {
+      storage.getItem(key, event => {
+        if (event.result === 'success') {
+          const storageData = JSON.parse(event.data)
+          if (storageData) {
+            const { value, duration } = storageData
+            // 在有效期内直接返回
+            if (duration === null || duration >= Date.now()) {
+              resolve(value)
+              return
+            }
+          }
+          removeStorage(key).then(r => {})
+          reject(`key: "${key}" timeout`)
+        } else {
+          reject(`key: "${key}" not found`)
+        }
+      })
+    } catch (error) {
+      console.error(error)
+      reject(error)
+    }
+  })
 }
 
 const removeStorage = key => {
@@ -90,10 +110,4 @@ const getAllKeys = () => {
   })
 }
 
-export default {
-  setStorage,
-  getStorage,
-  removeStorage,
-  length,
-  getAllKeys,
-}
+export { setStorage, getStorage, removeStorage, length, getAllKeys }
