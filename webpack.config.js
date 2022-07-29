@@ -25,7 +25,7 @@ module.exports = (_, argv) => {
     resolve: {
       extensions: ['.js', '.vue'],
       alias: {
-        '@': path.resolve(__dirname, 'src'), // 这样配置后 @ 可以指向 src 目录
+        '@': path.resolve(__dirname, 'src'),
         src: path.resolve(__dirname, 'src'),
         js: path.resolve(__dirname, 'src/js'),
         views: path.resolve(__dirname, 'src/views'),
