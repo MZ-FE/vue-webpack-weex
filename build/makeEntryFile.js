@@ -15,8 +15,9 @@ function genEntryJs() {
     const tmpPath = name
       .replace(/\.\/src\/views\//, '')
       .replace(/\/index\.vue/, '')
+    const fileName = tmpPath.split('/').join('_')
     // 生成entry js文件
-    let entryFile = path.resolve(entryPath, tmpPath + '.js')
+    let entryFile = path.resolve(entryPath, fileName + '.js')
     fse.outputFileSync(
       entryFile,
       `import App from 'views/${tmpPath}/index.vue'
@@ -33,7 +34,7 @@ new Vue({
 `
     )
     // 加入到entry，用于提供给webpack
-    entry[tmpPath] = entryFile
+    entry[fileName] = entryFile
   }
   return entry
 }
