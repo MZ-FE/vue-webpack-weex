@@ -29,6 +29,7 @@
     }
   },
   "dependencies": {
+    "core-js": "^3.24.0",
     "dayjs": "^1.11.2",
     "dolphin-native-bridge": "^0.2.0",
     "dolphin-weex-ui": "^0.3.6",
