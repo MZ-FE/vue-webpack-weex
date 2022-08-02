@@ -24,8 +24,8 @@ export function getParameterByName(name) {
 export function SimpleDiff(newObj, oldObj) {
   const ret = {}
   if (
-    !Object.prototype.toString.call(newObj) === '[object Object]' ||
-    !Object.prototype.toString.call(oldObj) === '[object Object]'
+    !(Object.prototype.toString.call(newObj) === '[object Object]') ||
+    !(Object.prototype.toString.call(oldObj) === '[object Object]')
   ) {
     return null
   }
