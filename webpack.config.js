@@ -1,4 +1,5 @@
 const path = require('path')
+const adbFunc = require('./build/adbFunc')
 const { merge } = require('webpack-merge')
 const TerserPlugin = require('terser-webpack-plugin')
 const env = require('dotenv').config().parsed
@@ -21,7 +22,20 @@ module.exports = (_, argv) => {
     module: {
       rules,
     },
-    plugins,
+    plugins: [
+      ...plugins,
+      // 打包完成是否执行一次adb推送
+      {
+        apply: compiler => {
+          compiler.hooks.done.tap('adb push', () => {
+            if (env.ADB_PUSH_AFTER_DONE !== 'true') return
+            console.log('开始推送...')
+            adbFunc()
+            console.log('推送完成')
+          })
+        },
+      },
+    ],
     resolve: {
       extensions: ['.js', '.vue'],
       alias: {

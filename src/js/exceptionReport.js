@@ -1,4 +1,5 @@
 import { Bridge } from 'dolphin-native-bridge'
+import debugUtil from "../util/debugUtil"
 /**
  *
  * @param {any} err
@@ -6,7 +7,8 @@ import { Bridge } from 'dolphin-native-bridge'
  * @param {string} info
  */
 function errorHandler(err, vm, info) {
-  console.error(err)
+  debugUtil.log('全局捕获err', err)
+  debugUtil.log('全局捕获info', info)
   const INFO_CONTENT = {
     path: weex.config.bundleUrl,
     env: weex.config.env.appEnv,
