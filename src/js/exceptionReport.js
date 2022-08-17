@@ -1,5 +1,5 @@
 import { Bridge } from 'dolphin-native-bridge'
-import debugUtil from "../util/debugUtil"
+import debugUtil from '../util/debugUtil'
 /**
  *
  * @param {any} err
