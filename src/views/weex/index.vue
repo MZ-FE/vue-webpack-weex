@@ -5,7 +5,7 @@
     @viewdisappear="viewdisappear"
   >
     <dof-minibar
-      title="插件"
+      :title="title"
       backgroundColor="transparent"
       textColor="#000000"
       :middle-text-style="headerStyle"
@@ -60,7 +60,7 @@
 import leftButton from '../../assets/image/header/back_black@2x.png'
 import logo from '../../assets/image/logo.png'
 import more from '../../assets/image/header/more_black.png'
-import { mapState } from 'vuex'
+import { mapState, mapGetters } from 'vuex'
 import { MzSliderBar } from 'mz-weex-ui'
 import { event } from '../../common/burialPointData'
 import { DofMinibar, DofButton } from 'dolphin-weex-ui'
@@ -112,7 +112,8 @@ export default {
     this.subTitle = 'Midea 模版项目'
   },
   computed: {
-    ...mapState(['title', 'trackInfo']),
+    ...mapState(['trackInfo']),
+    ...mapGetters(['title']),
   },
   methods: {
     jumpTo() {

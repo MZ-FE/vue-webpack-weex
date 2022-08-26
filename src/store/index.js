@@ -42,6 +42,9 @@ export default new Vuex.Store({
     homeId(state) {
       return state.homeInfo.homeId
     },
+    title(state) {
+      return state.deviceInfo.deviceName || ''
+    },
   },
   mutations: {
     setUserInfo(state, payload) {
