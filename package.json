@@ -14,7 +14,7 @@
     "build": "npm run clean:all && webpack --mode=production",
     "build:zip": "npm run clean:all && webpack --mode=production && node ./build/zip.js",
     "build:analyze": "npm run clean:all && webpack --mode=production --analyze",
-    "clean:all": "rimraf ./entry && rimraf ./dist && rimraf ./release",
+    "clean:all": "rimraf ./entry ./dist ./release",
     "lint": "eslint --ext .js,.vue src --fix",
     "prepare": "husky install",
     "cz": "cz",
