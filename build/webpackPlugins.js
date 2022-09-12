@@ -5,6 +5,7 @@ const env = require('dotenv').config().parsed
 const _ = require('lodash')
 const CopyPlugin = require('copy-webpack-plugin')
 const VersionWebpackPlugin = require('./VersionWebpackPlugin')
+const WebpackBar = require('webpackbar');
 
 const pageName = {}
 Object.keys(env).forEach(key => {
@@ -32,4 +33,5 @@ module.exports = [
   new VersionWebpackPlugin({
     version: JSON.parse(PLUGIN_VERSION),
   }),
+  new WebpackBar()
 ]
