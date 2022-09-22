@@ -15,8 +15,6 @@ module.exports = {
     'comma-dangle': 0,
     proseWrap: 'preserve',
     arrowParens: 'avoid',
-    'no-undef': 0,
-    'no-unused-vars': 0,
     // step1
     'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'off',
     'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
