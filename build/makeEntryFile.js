@@ -24,13 +24,17 @@ function genEntryJs() {
 import dolphinweex from 'js/dolphinweex.js'
 import exceptionReport from 'js/exceptionReport.js'
 import store from '@/store'
-Vue.use(dolphinweex)
-Vue.use(exceptionReport)
-new Vue({
-  el: '#root',
-  store,
-  render: h => h(App),
-})
+try {
+  Vue.use(dolphinweex)
+  Vue.use(exceptionReport)
+  new Vue({
+    el: '#root'
+    store,
+    render: h => h(App)
+  })
+} catch (e) {
+  console.log("newVueError!:" + e.toString())
+}
 `
     )
     // 加入到entry，用于提供给webpack
