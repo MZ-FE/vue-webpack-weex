@@ -148,13 +148,7 @@ export default {
       this.$bridge.hapticFeedback()
     },
     alert() {
-      Promise.any([
-        new Promise((resolve, reject) => setTimeout(reject, 200, 'Third')),
-        new Promise((resolve, reject) => setTimeout(resolve, 500, 'Second')),
-        new Promise((resolve, reject) => setTimeout(resolve, 1000, 'First')),
-      ])
-        .then(value => this.$alert(`Hello: ${value}`))
-        .catch(err => console.log(err))
+      this.$alert('world')
     },
   },
 }

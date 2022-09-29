@@ -1,8 +1,8 @@
 /**
  * 框架基座核心方法
  */
-import Core from 'dolphin-weex-ui/packages/core'
-import Utils from 'dolphin-weex-ui/packages/utils'
+const stream = weex.requireModule('stream')
+import { DofMinibar, Core, Utils } from 'dolphin-weex-ui'
 import { Bridge } from 'dolphin-native-bridge'
 let dolphinweex = {
   install(Vue, options) {
@@ -21,4 +21,4 @@ let dolphinweex = {
   },
 }
 
-export default dolphinweex
+module.exports = dolphinweex

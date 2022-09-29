@@ -1,38 +1,29 @@
 {
-  "presets": [
-    [
-      "@babel/env",
-      {
-        "targets": {
-          "ie": "10"
-        }
-      }
-    ]
-  ],
+  "presets": ["es2015", "stage-0"],
   "plugins": [
     [
-      "@babel/plugin-transform-runtime",
+      "transform-runtime",
       {
-        "corejs": 3
+        "helpers": false,
+        "polyfill": false,
+        "regenerator": true,
+        "moduleName": "babel-runtime"
       }
     ],
     [
       "component",
-      {
-        "libraryName": "mz-weex-ui",
-        "libDir": "packages",
-        "style": false
-      },
-      "mz-weex-ui"
-    ],
-    [
-      "component",
-      {
-        "libraryName": "dolphin-weex-ui",
-        "libDir": "packages",
-        "style": false
-      },
-      "dolphin-weex-ui"
+      [
+        {
+          "libraryName": "mz-weex-ui",
+          "libDir": "packages",
+          "style": false
+        },
+        {
+          "libraryName": "dolphin-weex-ui",
+          "libDir": "packages",
+          "style": false
+        }
+      ]
     ]
   ]
 }
