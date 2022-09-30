@@ -11,7 +11,7 @@ const srcFileName = bundleUrl.substring(
   bundleUrl.lastIndexOf('.js')
 )
 
-Vue.config.errorHandler = function (err, vm, info) {
+Vue.config.errorHandler = function (err) {
   console.error(err)
 }
 

@@ -24,7 +24,7 @@ function errorHandler(err, vm, info) {
     },
   }
   try {
-    Bridge.reportError(errorMessage).then(res => {
+    Bridge.reportError(errorMessage).then(() => {
       // Bridge.showToast(res)
     })
   } catch (error) {
@@ -58,8 +58,7 @@ function formatDate(format = 'Y-M-D h:m:s', timeStamp = Date.now()) {
   return res
 }
 export default {
-  install(Vue, options) {
-    let OriginErrorHandler = Vue.config.errorHandler
+  install(Vue) {
     Vue.config.errorHandler = errorHandler
     Vue.prototype.$throw = function (error) {
       errorHandler(error, this)

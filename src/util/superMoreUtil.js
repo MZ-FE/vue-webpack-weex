@@ -90,7 +90,7 @@ const superMoreUtil = {
     console.log('plugin pluginMenuPath: ' + path)
     let options = isColmo ? { bgColor: '#000000' } : {}
     options.url = path
-    navigator.push(options, event => {})
+    navigator.push(options, () => {})
   },
   reset() {
     // 初始化超级菜单组件，清除一些缓存

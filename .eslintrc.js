@@ -7,6 +7,7 @@ module.exports = {
   extends: ['plugin:vue/essential', 'eslint:recommended', 'prettier'],
   plugins: ['vue', 'prettier'],
   rules: {
+    'no-undef': 0,
     'no-empty': 0,
     'no-useless-escape': 0,
     // step2

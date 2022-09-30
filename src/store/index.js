@@ -26,6 +26,7 @@ export default new Vuex.Store({
     },
     otherInfo: {
       deviceModel: '', // 设备型号
+      isUpdateDeviceModel: false, // 是否查过一次市场型号
     }, // 保存额外设备信息
     throttleTempData: {}, // 操作缓存，用于记录上一次下发指令时的状态，下一次下发和新的状态进行对比（diff）然后下发有差异的属性
   },
@@ -70,6 +71,9 @@ export default new Vuex.Store({
     },
     setThrottleTempData(state, payload) {
       state.throttleTempData = payload
+    },
+    setIsUpdateDeviceModel(state) {
+      state.otherInfo.isUpdateDeviceModel = true
     },
     saveThrottleTempData(state) {
       state.throttleTempData = { ...state.deviceDetail }
@@ -137,7 +141,7 @@ export default new Vuex.Store({
               operation: 'luaQuery',
               params: {},
             },
-            false
+            isShowLoading
           ).catch(err => {
             debugUtil.log('updateDeviceDetail-err:', err)
             reject(err)
@@ -253,7 +257,7 @@ export default new Vuex.Store({
       }
     },
     async sendCentralCloudRequest(
-      { state },
+      _,
       { url, params = {}, option = { isShowLoading: true } }
     ) {
       const reqId = Bridge.genMessageId(),
@@ -290,7 +294,7 @@ export default new Vuex.Store({
      * @param url 传入【/v1/appliance/operation/】后面部分的url
      * @param params 默认Post方法
      */
-    async sendModelCommand({ state, dispatch }, { url, params = {} }) {
+    async sendModelCommand({ dispatch }, { url, params = {} }) {
       const msgId = Bridge.genMessageId()
 
       const sendData = merge(
@@ -408,11 +412,13 @@ export default new Vuex.Store({
           tm: Math.round(new Date().getTime() / 1000),
         },
       }).catch(error => {
+        commit('setIsUpdateDeviceModel')
         debugUtil.log('updateDeviceModel-err', error)
         Bridge.showToast('获取设备型号失败')
         return error
       })
       debugUtil.log('updateDeviceModel-res', res)
+      commit('setIsUpdateDeviceModel')
       if (res.data && res.data.productModels && res.data.productModels[0]) {
         let deviceModel = res.data.productModels[0]
         debugUtil.log('deviceModel', deviceModel)
@@ -428,7 +434,10 @@ export default new Vuex.Store({
     async setBurialPoint({ state, dispatch }, { event, eventParams }) {
       debugUtil.log('state.otherInfo', state.otherInfo)
       // 获取型号信息
-      if (!state.otherInfo.deviceModel) {
+      if (
+        !state.otherInfo.deviceModel &&
+        !state.otherInfo.isUpdateDeviceModel
+      ) {
         await dispatch('updateDeviceModel')
       }
 

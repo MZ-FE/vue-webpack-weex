@@ -57,7 +57,7 @@ const getStorage = key => {
               return
             }
           }
-          removeStorage(key).then(r => {})
+          removeStorage(key).then(() => {})
           reject(`key: "${key}" timeout`)
         } else {
           reject(`key: "${key}" not found`)

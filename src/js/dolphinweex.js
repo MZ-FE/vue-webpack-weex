@@ -1,11 +1,10 @@
 /**
  * 框架基座核心方法
  */
-const stream = weex.requireModule('stream')
-import { DofMinibar, Core, Utils } from 'dolphin-weex-ui'
+import { Core, Utils } from 'dolphin-weex-ui'
 import { Bridge } from 'dolphin-native-bridge'
 let dolphinweex = {
-  install(Vue, options) {
+  install(Vue) {
     Vue.prototype.$bridge = Bridge
     Vue.prototype.$util = Utils
     Vue.prototype.$alert = Core.alert
