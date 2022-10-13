@@ -5,10 +5,7 @@
     @viewdisappear="viewdisappear"
   >
     <dof-minibar
-      :title="title"
       backgroundColor="transparent"
-      textColor="#000000"
-      :middle-text-style="headerStyle"
       @dofMinibarLeftButtonClicked="minibarLeftButtonClick"
       @dofMinibarRightButtonClicked="minibarRightButtonClick"
     >
@@ -21,13 +18,16 @@
       <div slot="right" class="right-img-wrapper">
         <image :src="more" style="height: 32px; width: 32px"></image>
       </div>
+      <div slot="middle" @click="titleClick">
+        <text class="text-title">{{ title }}</text>
+      </div>
     </dof-minibar>
     <div class="center margin-top-80">
       <image class="logo" :src="logo"></image>
       <text class="h2">{{ title }}</text>
       <text class="h4">{{ subTitle }}</text>
-      <text class="h4"> version:{{ version }} </text>
-      <text class="h4"> file:{{ srcFileName }} </text>
+      <text class="h4">file:{{ srcFileName }} version:{{ version }} </text>
+      <text class="h4">点击页面标题5下，开启或关闭调试工具</text>
       <dof-button
         class="margin-top-80"
         text="打印测试($toast)"
@@ -52,8 +52,10 @@
       <mz-slider-bar />
     </div>
     <div class="footer">
-      <text class="copyright">&copy;Midea IOT software</text>
+      <text class="copyright">&copy;Midea</text>
     </div>
+
+    <Debug />
   </div>
 </template>
 <script>
@@ -81,12 +83,6 @@ export default {
     more,
     logo,
     version: PLUGIN_VERSION,
-    headerStyle: {
-      fontFamily: 'PingFangSC-Regular',
-      fontWeight: '900',
-      fontSize: '28px',
-      letterSpacing: 0,
-    },
     //超级菜单参数
     superMoreUtil: {
       // pluginData：插件信息
@@ -97,6 +93,7 @@ export default {
       routerConfigUrl: weex.config.bundleUrl.split('weex.js')[0] + 'more.js',
       bluetoothEnter: false,
     },
+    temp: 0,
   }),
   async created() {
     await this.init()
@@ -146,9 +143,28 @@ export default {
     toast() {
       this.$toast(JSON.stringify(this.trackInfo))
       this.$bridge.hapticFeedback()
+      this.$log('toast 触发', '输出了trackInfo', '震动了一下')
     },
     alert() {
-      this.$alert(this.deviceInfo)
+      this.$alert('hello world')
+      this.$log('alert 触发')
+    },
+
+    // 调试模式的开启和关闭方法，可按实际需要自定义
+    async titleClick() {
+      this.$log({ temp: this.temp++ })
+
+      if (!this.isSitEnv || this.temp < 5) {
+        return
+      }
+
+      this.temp = 0
+      const result = await this.$storage.getStorage('showDebug').catch()
+      const showDebug =
+        result === '' || result === undefined ? false : JSON.parse(result)
+
+      !showDebug && this.$toast('Debug Mode')
+      this.$storage.setStorage('showDebug', !showDebug)
     },
   },
 }
@@ -177,5 +193,11 @@ export default {
 }
 .margin-bottom-20 {
   margin-bottom: 20px;
+}
+.text-title {
+  font-weight: 900;
+  font-size: 32px;
+  line-height: 90px;
+  color: #000;
 }
 </style>
