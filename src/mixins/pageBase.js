@@ -21,6 +21,7 @@ export default {
     DofMinibar,
   },
   data: () => ({
+    isSitEnv: weex.config.env.appEnv === 'sit',
     isIos: weex.config.env.platform === 'iOS',
     srcFileName: srcFileName,
     pluginVersion: PLUGIN_VERSION,

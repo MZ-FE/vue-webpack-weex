@@ -42,10 +42,11 @@ export default {
   },
   async updateDeviceInfo({ commit }) {
     const response = await this._vm.$bridge.getDeviceInfo().catch(err => {
-      debugUtil.log('updateDeviceInfo-err:', err)
+      this._vm.$log({ 'updateDeviceInfo-err:': err })
       this._vm.$bridge.showToast('设备信息获取失败')
     })
-    debugUtil.log('updateDeviceInfo:', response)
+
+    this._vm.$log({ updateDeviceInfo: response })
     commit('setDeviceInfo', response.result)
     return response
   },
