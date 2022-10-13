@@ -148,7 +148,7 @@ export default {
       this.$bridge.hapticFeedback()
     },
     alert() {
-      this.$alert('world')
+      this.$alert(this.deviceInfo)
     },
   },
 }
