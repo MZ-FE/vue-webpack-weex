@@ -54,7 +54,7 @@ import BindingX from 'weex-bindingx'
 import { delay } from '@/util'
 const domModule = weex.requireModule('dom')
 
-module.exports = {
+export default {
   props: {
     height: {
       type: Number,

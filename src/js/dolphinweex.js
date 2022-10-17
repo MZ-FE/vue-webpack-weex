@@ -6,7 +6,7 @@ import { Bridge } from 'dolphin-native-bridge'
 import { Log } from '@/util'
 import Debug from '@/components/Debug'
 
-const dolphinweex = {
+export default {
   install(Vue) {
     const Bus = new Vue()
     Vue.prototype.$bus = Bus
@@ -27,5 +27,3 @@ const dolphinweex = {
     Vue.component('Debug', Debug) // 全局注册日志输出组件
   },
 }
-
-module.exports = dolphinweex
