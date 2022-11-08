@@ -5,7 +5,7 @@ import { mapActions, mapMutations, mapState } from 'vuex'
 import { getParameterByName } from '../util'
 import { event } from '../common/burialPointData'
 
-const bundleUrl = weex.config.bundleUrl
+const { bundleUrl } = weex.config
 const srcFileName = bundleUrl.substring(
   bundleUrl.lastIndexOf('/') + 1,
   bundleUrl.lastIndexOf('.js')
@@ -23,7 +23,7 @@ export default {
   data: () => ({
     isSitEnv: weex.config.env.appEnv === 'sit',
     isIos: weex.config.env.platform === 'iOS',
-    srcFileName: srcFileName,
+    srcFileName,
     pluginVersion: PLUGIN_VERSION,
     appearCount: 0,
     disappearLock: false, // 调用一次disappear之后设成true，防止二次调用
@@ -61,8 +61,8 @@ export default {
       }
       const curPageName = PAGE_NAME[srcFileName]
       this.setTrackInfo({
-        referPageName: referPageName,
-        curPageName: curPageName,
+        referPageName,
+        curPageName,
       })
       this.$storage.setStorage('pageName', curPageName) // 更新缓存中的当前页面名称
 
@@ -87,7 +87,7 @@ export default {
     },
     getParameterByName,
     back() {
-      //返回上一页
+      // 返回上一页
       this.$pop()
     },
     exit() {

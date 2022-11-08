@@ -7,7 +7,7 @@ export default {
   methods: {
     ...mapActions(['updateDeviceInfo', 'updateDeviceDetail', 'setBurialPoint']),
     back() {
-      //返回上一页
+      // 返回上一页
       this.$pop()
     },
     exit() {

@@ -22,6 +22,7 @@ export default new Vuex.Store({
       isUpdateDeviceModel: false, // 是否查过一次市场型号
     }, // 保存额外设备信息
     throttleTempData: {}, // 操作缓存，用于记录上一次下发指令时的状态，下一次下发和新的状态进行对比（diff）然后下发有差异的属性
+    isSitEnv: weex.config.env.appEnv === 'sit',
   },
   getters,
   mutations,

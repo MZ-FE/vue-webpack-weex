@@ -6,9 +6,7 @@ const debugUtil = {
    */
   log(...params) {
     // android平台对参数进行字符串转换，方便在android studio下输出日志查看
-    params = params.map(item => {
-      return JSON.stringify(item, null, 2)
-    })
+    params = params.map(item => JSON.stringify(item, null, 2))
 
     console.log(params.join('----'))
   },

@@ -7,15 +7,15 @@ const storage = weex.requireModule('storage')
  * @param [duration] {number} Storage有效时间，留空无限期，单位：ms
  * @returns promise
  */
-const setStorage = (key, value, duration) => {
-  return new Promise((resolve, reject) => {
+const setStorage = (key, value, duration) =>
+  new Promise((resolve, reject) => {
     if (!key) {
       reject('key is empty !')
       return
     }
     const storageData = {
       value,
-      duration: duration ? duration : null,
+      duration: duration || null,
     }
     const json = JSON.stringify(storageData)
     try {
@@ -32,15 +32,14 @@ const setStorage = (key, value, duration) => {
       reject(error)
     }
   })
-}
 
 /**
  * 缓存get
  * @param key {string} 键
  * @returns promise
  */
-const getStorage = key => {
-  return new Promise((resolve, reject) => {
+const getStorage = key =>
+  new Promise((resolve, reject) => {
     if (!key) {
       reject('key is empty !')
       return
@@ -68,10 +67,9 @@ const getStorage = key => {
       reject(error)
     }
   })
-}
 
-const removeStorage = key => {
-  return new Promise((resolve, reject) => {
+const removeStorage = key =>
+  new Promise((resolve, reject) => {
     try {
       if (!key) {
         reject('key is empty !')
@@ -87,27 +85,24 @@ const removeStorage = key => {
       reject(error)
     }
   })
-}
 
-const length = () => {
-  return new Promise((resolve, reject) => {
+const length = () =>
+  new Promise((resolve, reject) => {
     storage.length(event => {
       event.result === 'success'
         ? resolve(event.data)
         : reject('failed to get local storage length')
     })
   })
-}
 
-const getAllKeys = () => {
-  return new Promise((resolve, reject) => {
+const getAllKeys = () =>
+  new Promise((resolve, reject) => {
     storage.getAllKeys(event => {
-      let keyGroupStr = event.data.join(', ')
+      const keyGroupStr = event.data.join(', ')
       event.result === 'success'
         ? resolve(`props:${keyGroupStr}`)
         : reject('get all keys failed')
     })
   })
-}
 
 export { setStorage, getStorage, removeStorage, length, getAllKeys }

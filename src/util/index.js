@@ -11,8 +11,8 @@ export function delay(ms = 0) {
 export function getParameterByName(name) {
   const url = this.$getConfig().bundleUrl
   name = name.replace(/[\[\]]/g, '\\$&')
-  const regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
-    results = regex.exec(url)
+  const regex = new RegExp(`[?&]${name}(=([^&#]*)|&|#|$)`)
+  const results = regex.exec(url)
   if (!results) return null
   if (!results[2]) return ''
   return decodeURIComponent(results[2].replace(/\+/g, ' '))
@@ -60,7 +60,7 @@ export const sortObj = obj => {
     return obj.map(item => sortObj(item))
   }
   // 除数组以外的对象数据
-  else if (isObject(obj)) {
+  if (isObject(obj)) {
     const keysArray = Object.keys(obj).sort()
     const newObj = {}
     keysArray.forEach(key => {
@@ -70,9 +70,8 @@ export const sortObj = obj => {
     return newObj
   }
   // 非对像数据，原样返回
-  else {
-    return obj
-  }
+
+  return obj
 }
 
 /**
@@ -100,7 +99,7 @@ export async function Log(...params) {
   try {
     // 从第二个参数 params[1] 中提取日志输出设置项
     const {
-      isExpanded = false,
+      isExpanded = true,
       logType = ['bridge', 'pageview'],
       level = 'Info',
     } = params[1] || {}

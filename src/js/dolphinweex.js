@@ -3,8 +3,8 @@
  */
 import { Core, Utils } from 'dolphin-weex-ui'
 import { Bridge } from 'dolphin-native-bridge'
-import { Log } from '@/util'
-import Debug from '@/components/Debug'
+import { Log } from '../util'
+import DebugWindow from '../components/DebugWindow'
 
 export default {
   install(Vue) {
@@ -24,6 +24,6 @@ export default {
     Vue.prototype.$storage = Core.storage
 
     Vue.prototype.$log = Log.bind(Vue.prototype) // 全局绑定日志输出方法
-    Vue.component('Debug', Debug) // 全局注册日志输出组件
+    Vue.component('DebugWindow', DebugWindow) // 全局注册日志输出组件
   },
 }

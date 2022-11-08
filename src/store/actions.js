@@ -1,9 +1,9 @@
+import merge from 'lodash/merge'
+import dayjs from 'dayjs'
 import debugUtil from '../util/debugUtil'
 import { SimpleDiff } from '../util'
 import { commomParam, event } from '../common/burialPointData'
 import { DEBOUNCE_TIME, THROTTLE_TIME } from '../config'
-import merge from 'lodash/merge'
-import dayjs from 'dayjs'
 
 let debounceTimer = null
 let throttleTimer = null
@@ -96,7 +96,7 @@ export default {
    * @returns {Promise<*>}
    */
   async updateGatewayDeviceDetail({ state, dispatch, commit }) {
-    let response = await dispatch(
+    const response = await dispatch(
       'getGatewayDeviceInfo',
       state.deviceInfo.deviceId
     )
@@ -194,20 +194,20 @@ export default {
     _,
     { url, params = {}, option = { isShowLoading: true } }
   ) {
-    const reqId = this._vm.$bridge.genMessageId(),
-      stamp = dayjs().format('YYYYMMDDhhmmss'),
-      sendData = merge(
-        {
-          method: 'POST',
-          data: {
-            reqId,
-            stamp,
-            tm: stamp,
-            requestId: reqId, //有的用的这个字段
-          },
+    const reqId = this._vm.$bridge.genMessageId()
+    const stamp = dayjs().format('YYYYMMDDhhmmss')
+    const sendData = merge(
+      {
+        method: 'POST',
+        data: {
+          reqId,
+          stamp,
+          tm: stamp,
+          requestId: reqId, // 有的用的这个字段
         },
-        params
-      )
+      },
+      params
+    )
 
     const res = await this._vm.$bridge
       .sendCentralCloudRequest(url, sendData, option)
@@ -232,7 +232,7 @@ export default {
     const sendData = merge(
       {
         data: {
-          msgId: msgId,
+          msgId,
         },
       },
       params
@@ -275,7 +275,7 @@ export default {
       this._vm.$bridge.showLoading()
     }
 
-    let msgId = this._vm.$bridge.genMessageId()
+    const msgId = this._vm.$bridge.genMessageId()
 
     // 统一增加userId等公共参数
     params.type = params.type || state.deviceInfo.deviceType
@@ -283,11 +283,9 @@ export default {
     params.transmitData.msgId = msgId
     params.transmitData.houseId = state.userInfo.homeId
 
-    let response = await this._vm.$bridge
+    const response = await this._vm.$bridge
       .requestDataTransmit(params)
-      .catch(err => {
-        return err
-      })
+      .catch(err => err)
 
     if (response && response.returnData) {
       response.returnData = JSON.parse(response.returnData)
@@ -338,7 +336,7 @@ export default {
    * 获取产品型号信息
    */
   async updateDeviceModel({ state, commit, dispatch }) {
-    let res = await dispatch('sendCentralCloudRequest', {
+    const res = await dispatch('sendCentralCloudRequest', {
       url: '/dcp-web/api-product/message/getProductBySerialNoNew',
       params: {
         serialNo: state.deviceInfo.deviceSn,
@@ -354,7 +352,7 @@ export default {
     debugUtil.log('updateDeviceModel-res', res)
     commit('setIsUpdateDeviceModel')
     if (res.data && res.data.productModels && res.data.productModels[0]) {
-      let deviceModel = res.data.productModels[0]
+      const deviceModel = res.data.productModels[0]
       debugUtil.log('deviceModel', deviceModel)
       commit('setDeviceModel', deviceModel)
     }
@@ -372,8 +370,8 @@ export default {
       await dispatch('updateDeviceModel')
     }
 
-    let params = {
-      event: event,
+    const params = {
+      event,
       eventParams: {
         ...commomParam,
         widget_name: `${state.deviceInfo.deviceType}_${state.deviceInfo.deviceSn8}`, // 插件包名称
@@ -386,7 +384,7 @@ export default {
       },
     }
 
-    //自定义参数obj增量替换通用参数eventParams
+    // 自定义参数obj增量替换通用参数eventParams
     Object.assign(params.eventParams, eventParams)
     debugUtil.log('setBurialPoint-params', params)
     this._vm.$bridge.trackEvent(params)

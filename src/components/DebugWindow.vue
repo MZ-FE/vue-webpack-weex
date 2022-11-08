@@ -52,6 +52,7 @@ import { mapState } from 'vuex'
 import dayjs from 'dayjs'
 import BindingX from 'weex-bindingx'
 import { delay } from '@/util'
+
 const domModule = weex.requireModule('dom')
 
 export default {

@@ -26,8 +26,10 @@
       <image class="logo" :src="logo"></image>
       <text class="h2">{{ title }}</text>
       <text class="h4">{{ subTitle }}</text>
-      <text class="h4">file:{{ srcFileName }} version:{{ version }} </text>
-      <text class="h4">点击页面标题5下，开启或关闭调试工具</text>
+      <text class="h4">file:{{ srcFileName }} version:{{ version }}</text>
+      <text class="h4"
+        >点击页面标题5下，开启或关闭调试工具，需要再次进入插件</text
+      >
       <dof-button
         class="margin-top-80"
         text="打印测试($toast)"
@@ -44,28 +46,26 @@
       ></dof-button>
       <dof-button
         class="margin-top-80"
-        text="快速查看"
+        text="报错并全局捕获打印"
         type="primary"
         size="big"
-        @dofButtonClicked="jumpTo"
+        @dofButtonClicked="error"
       ></dof-button>
-      <mz-slider-bar />
     </div>
     <div class="footer">
       <text class="copyright">&copy;Midea</text>
     </div>
 
-    <Debug />
+    <debug-window />
   </div>
 </template>
 <script>
+import { mapState, mapGetters } from 'vuex'
+import { DofMinibar, DofButton } from 'dolphin-weex-ui'
 import leftButton from '../../assets/image/header/back_black@2x.png'
 import logo from '../../assets/image/logo.png'
 import more from '../../assets/image/header/more_black.png'
-import { mapState, mapGetters } from 'vuex'
-import { MzSliderBar } from 'mz-weex-ui'
 import { event } from '../../common/burialPointData'
-import { DofMinibar, DofButton } from 'dolphin-weex-ui'
 import pageBase from '../../mixins/pageBase'
 import debugUtil from '../../util/debugUtil'
 import superMoreUtil from '../../util/superMoreUtil'
@@ -74,7 +74,6 @@ export default {
   components: {
     DofMinibar,
     DofButton,
-    MzSliderBar,
   },
   mixins: [pageBase],
   data: () => ({
@@ -83,14 +82,14 @@ export default {
     more,
     logo,
     version: PLUGIN_VERSION,
-    //超级菜单参数
+    // 超级菜单参数
     superMoreUtil: {
       // pluginData：插件信息
       pluginData: {
         version: PLUGIN_VERSION,
         showCommonQuestion: true,
       },
-      routerConfigUrl: weex.config.bundleUrl.split('weex.js')[0] + 'more.js',
+      routerConfigUrl: `${weex.config.bundleUrl.split('weex.js')[0]}more.js`,
       bluetoothEnter: false,
     },
     temp: 0,
@@ -109,13 +108,16 @@ export default {
     this.subTitle = 'Midea 模版项目'
   },
   computed: {
-    ...mapState(['trackInfo']),
+    ...mapState(['trackInfo', 'isSitEnv']),
     ...mapGetters(['title']),
   },
   methods: {
     jumpTo() {
-      let url = 'welcome.js'
+      const url = 'welcome.js'
       this.$push(url)
+    },
+    error() {
+      throw new Error('报错测试')
     },
     minibarLeftButtonClick() {
       this.back()
@@ -153,47 +155,56 @@ export default {
     // 调试模式的开启和关闭方法，可按实际需要自定义
     async titleClick() {
       this.$log({ temp: this.temp++ })
-
       if (!this.isSitEnv || this.temp < 5) {
         return
       }
-
       this.temp = 0
-      const result = await this.$storage.getStorage('showDebug').catch()
-      const showDebug =
-        result === '' || result === undefined ? false : JSON.parse(result)
+      try {
+        const result = await this.$storage.getStorage('showDebug')
+        const showDebug =
+          result === '' || result === undefined ? false : JSON.parse(result)
+        this.$log({ step: 4 })
 
-      !showDebug && this.$toast('Debug Mode')
-      this.$storage.setStorage('showDebug', !showDebug)
+        !showDebug && this.$toast('Debug Mode')
+        this.$storage.setStorage('showDebug', !showDebug)
+      } catch (_) {
+        this.$toast('Debug Mode')
+        this.$storage.setStorage('showDebug', true)
+      }
     },
   },
 }
 </script>
 
-<style lang="scss" scoped>
-@import '../../css/dolphinweex.scss';
+<style scoped>
 .logo {
   width: 150px;
   height: 150px;
 }
+
 .footer {
   position: absolute;
   bottom: 10px;
   right: 20px;
 }
+
 .copyright {
   font-size: 20px;
   color: #464c5b;
 }
+
 .margin-top-80 {
   margin-top: 80px;
 }
+
 .margin-top-40 {
   margin-top: 40px;
 }
+
 .margin-bottom-20 {
   margin-bottom: 20px;
 }
+
 .text-title {
   font-weight: 900;
   font-size: 32px;

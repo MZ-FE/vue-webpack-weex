@@ -1,5 +1,6 @@
 import { Bridge } from 'dolphin-native-bridge'
 import debugUtil from '../util/debugUtil'
+import { Log } from '../util'
 /**
  *
  * @param {any} err
@@ -7,26 +8,26 @@ import debugUtil from '../util/debugUtil'
  * @param {string} info
  */
 function errorHandler(err, vm, info) {
-  debugUtil.log('全局捕获err', err)
-  debugUtil.log('全局捕获info', info)
   const INFO_CONTENT = {
     path: weex.config.bundleUrl,
     env: weex.config.env.appEnv,
     errorDesc: err.toString(),
     errDetail: JSON.stringify(err),
-    info: info,
+    info,
+    stack: err.stack,
   }
-  let errorMessage = {
+  const errorMessage = {
     stack: [INFO_CONTENT.path, INFO_CONTENT.errorDesc, INFO_CONTENT.info],
     extraInfo: {
       timeStamp: formatDate(),
       errTxt: INFO_CONTENT.errDetail,
     },
   }
+  debugUtil.log('全局捕获err', INFO_CONTENT)
+  Log.bind(vm)('全局捕获err', INFO_CONTENT)
+  // 报错埋点
   try {
-    Bridge.reportError(errorMessage).then(() => {
-      // Bridge.showToast(res)
-    })
+    Bridge.reportError(errorMessage)
   } catch (error) {
     console.error(error)
   }
@@ -37,8 +38,8 @@ function errorHandler(err, vm, info) {
  * @param {string} timeStamp 时间戳
  */
 function formatDate(format = 'Y-M-D h:m:s', timeStamp = Date.now()) {
-  let date = new Date(timeStamp)
-  let dateInfo = {
+  const date = new Date(timeStamp)
+  const dateInfo = {
     Y: date.getFullYear(),
     M: date.getMonth() + 1,
     D: date.getDate(),
@@ -46,8 +47,8 @@ function formatDate(format = 'Y-M-D h:m:s', timeStamp = Date.now()) {
     m: date.getMinutes(),
     s: date.getSeconds(),
   }
-  let formatNumber = n => (n > 10 ? n : '0' + n)
-  let res = format
+  const formatNumber = n => (n > 10 ? n : `0${n}`)
+  const res = format
     .replace('Y', dateInfo.Y)
     .replace('M', dateInfo.M)
     .replace('D', dateInfo.D)
@@ -61,10 +62,7 @@ export default {
   install(Vue) {
     Vue.config.errorHandler = errorHandler
     Vue.prototype.$throw = function (error) {
-      errorHandler(error, this)
-    }
-    Vue.throw = function (error, vm = null) {
-      errorHandler(error, vm)
+      errorHandler(error, Vue)
     }
   },
 }
