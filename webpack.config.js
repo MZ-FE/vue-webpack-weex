@@ -1,11 +1,11 @@
 const path = require('path')
-const adbFunc = require('./build/adbFunc')
 const { merge } = require('webpack-merge')
 const TerserPlugin = require('terser-webpack-plugin')
 const env = require('dotenv').config().parsed
 const entry = require('./build/makeEntryFile')
 const rules = require('./build/webpackLoaders')
 const plugins = require('./build/webpackPlugins')
+const pushToEnds = require('./build/push')
 const BundleAnalyzerPlugin =
   require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 
@@ -27,11 +27,11 @@ module.exports = (_, argv) => {
       // 打包完成是否执行一次adb推送
       {
         apply: compiler => {
-          compiler.hooks.done.tap('adb push', () => {
-            if (env.ADB_PUSH_AFTER_DONE !== 'true') return
-            console.log('开始推送...')
-            adbFunc()
-            console.log('推送完成')
+          compiler.hooks.done.tap('AutoPush', () => {
+            if (!env.PUSH_AFTER_DONE) {
+              return
+            }
+            pushToEnds()
           })
         },
       },

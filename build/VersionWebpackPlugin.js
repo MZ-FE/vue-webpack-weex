@@ -23,17 +23,16 @@ class VersionWebpackPlugin {
   }
 
   apply(compiler) {
-    compiler.hooks.done.tap(
-      'EditPackageJSONVersionPlugin',
-      () => {
-        console.log('\n打包完成，更新package.json!')
+    compiler.hooks.done.tap('EditPackageJSONVersionPlugin', () => {
+        console.log('\n✔ 打包完成，更新package.json!')
         const pkgPath = path.join(__dirname, '../package.json')
         let pkg = fs.readFileSync(pkgPath)
         pkg = JSON.parse(pkg)
         pkg.version = this.options.version
         fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2))
-      }
-    )
+        
+        console.log(`✔ package.json 版本号已更新为：${this.options.version}\n`)
+      })
   }
 }
 
