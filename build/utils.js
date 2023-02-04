@@ -2,8 +2,6 @@
  * @description 公共配置
  */
 
-const path = require('path')
-const fse = require('fs-extra')
 const dayjs = require('dayjs')
 
 // 根据当前日期生成插件包后缀
