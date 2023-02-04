@@ -13,9 +13,7 @@ const getPluginSuffix = () => `${dayjs(new Date()).format('YYYYMMDD')}00`
 const getTimeStr = () => dayjs().format('HH:mm:ss')
 
 // 从 package.json 获取插件版本号
-const getWidgetVersion = () => {
-  return require('../package.json').version
-}
+const getWidgetVersion = () => require('../package.json').version
 
 module.exports = {
   getTimeStr,
