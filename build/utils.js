@@ -14,9 +14,7 @@ const getTimeStr = () => dayjs().format('HH:mm:ss')
 
 // 从 package.json 获取插件版本号
 const getWidgetVersion = () => {
-  const pkgPath = path.join(__dirname, '../package.json')
-  const pkg = JSON.parse(fse.readFileSync(pkgPath)) || {}
-  return pkg.version
+  return require('../package.json').version
 }
 
 module.exports = {
