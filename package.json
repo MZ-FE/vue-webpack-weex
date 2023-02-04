@@ -12,16 +12,16 @@
     "start": "npm run dev",
     "dev": "npm run clean:all && webpack --watch --mode=development",
     "build": "npm run clean:all && webpack --mode=production",
-    "build:zip": "npm run clean:all && webpack --mode=production && node ./build/zip.js",
-    "build:analyze": "npm run clean:all && webpack --mode=production --analyze",
+    "build:pack": "npm run build && node ./build/pack.js",
+    "build:analyze": "npm run build --analyze",
+    "push": "node build/push.js",
     "clean:all": "rimraf ./entry ./dist ./release",
     "lint": "eslint --ext .js,.vue src --fix",
     "prepare": "husky install",
     "cz": "cz",
     "release": "standard-version",
     "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0 && git add CHANGELOG.md",
-    "prettier": "prettier --write \"src/\"",
-    "adb": "node ./build/adb"
+    "prettier": "prettier --write \"src/\""
   },
   "config": {
     "commitizen": {
@@ -29,6 +29,7 @@
     }
   },
   "dependencies": {
+    "chalk": "4",
     "core-js": "^3.26.0",
     "dayjs": "^1.11.6",
     "dolphin-native-bridge": "^0.2.3",
