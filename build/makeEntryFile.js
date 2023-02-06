@@ -28,7 +28,7 @@ try {
   Vue.use(dolphinweex)
   Vue.use(exceptionReport)
   new Vue({
-    el: '#root'
+    el: '#root',
     store,
     render: h => h(App)
   })
