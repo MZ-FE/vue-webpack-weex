@@ -122,11 +122,8 @@ export async function Log(...params) {
       return item
     })
 
-    // 加上专用指示符，以便过滤日志
-    const indicator = '>'
-
     // 各条日志之间的分隔符
-    const SPLITER = `\n${indicator}---- Next Slice of ${pageName}.js ----\n`
+    const SPLITER = `\n$>---- Next Slice of ${pageName}.js ----\n`
 
     // 基于 pageview，页面浮层
     if (logType.includes('pageview') && !!this) {
@@ -141,8 +138,8 @@ export async function Log(...params) {
 
     // 基于 this.$bridge.log
     if (logType.includes('bridge') && !!this) {
-      const prefix = `\n${indicator}===== Beginning of ${pageName}.js =====\n`
-      const str = msg_split.map(item => `${indicator}${item}`).join(SPLITER)
+      const prefix = `\n$>===== Beginning of ${pageName}.js =====\n`
+      const str = msg_split.map(item => `>${item}`).join(SPLITER)
       this.$bridge.log({ message: `${prefix}${str}`, level })
     }
 
