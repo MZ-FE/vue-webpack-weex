@@ -25,13 +25,17 @@ import dolphinweex from 'js/dolphinweex.js'
 import exceptionReport from 'js/exceptionReport.js'
 import store from '@/store'
 try {
+  console.log(1)
   Vue.use(dolphinweex)
+  console.log(2)
   Vue.use(exceptionReport)
+  console.log(3)
   new Vue({
     el: '#root',
     store,
     render: h => h(App)
   })
+  console.log(4)
 } catch (e) {
   console.log("newVueError!:" + e.toString())
 }

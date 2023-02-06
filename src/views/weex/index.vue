@@ -26,6 +26,7 @@
       <image class="logo" :src="logo"></image>
       <text class="h2">{{ title }}</text>
       <text class="h4">{{ subTitle }}</text>
+      <text class="h4">{{ text }}</text>
       <text class="h4">file:{{ srcFileName }} version:{{ version }}</text>
       <text class="h4"
         >点击页面标题5下，开启或关闭调试工具，需要再次进入插件</text
@@ -60,6 +61,7 @@
   </div>
 </template>
 <script>
+import { defineComponent, ref } from 'vue'
 import { mapState, mapGetters } from 'vuex'
 import { DofMinibar, DofButton } from 'dolphin-weex-ui'
 import leftButton from '../../assets/image/header/back_black@2x.png'
@@ -70,41 +72,46 @@ import pageBase from '../../mixins/pageBase'
 import debugUtil from '../../util/debugUtil'
 import superMoreUtil from '../../util/superMoreUtil'
 
-export default {
+export default defineComponent({
   components: {
     DofMinibar,
     DofButton,
   },
   mixins: [pageBase],
-  data: () => ({
-    subTitle: '',
-    leftButton,
-    more,
-    logo,
-    version: PLUGIN_VERSION,
-    // 超级菜单参数
-    superMoreUtil: {
-      // pluginData：插件信息
-      pluginData: {
-        version: PLUGIN_VERSION,
-        showCommonQuestion: true,
+  setup() {
+    return {
+      text: '233',
+      subTitle: '',
+      leftButton,
+      more,
+      logo,
+      version: PLUGIN_VERSION,
+      // 超级菜单参数
+      superMoreUtil: {
+        // pluginData：插件信息
+        pluginData: {
+          version: PLUGIN_VERSION,
+          showCommonQuestion: true,
+        },
+        routerConfigUrl: `${weex.config.bundleUrl.split('weex.js')[0]}more.js`,
+        bluetoothEnter: false,
       },
-      routerConfigUrl: `${weex.config.bundleUrl.split('weex.js')[0]}more.js`,
-      bluetoothEnter: false,
-    },
-    temp: 0,
-  }),
+    }
+  },
   async created() {
     await this.init()
     this.$bridge.addEventListener('receiveMessage', data => {
       this.updateDeviceDetail({ delay: 2000 })
       debugUtil.log('receiveMessage', data)
     })
+    // @ts-ignore
     this.$bridge.addEventListener('receiveMessageFromApp', data => {
       debugUtil.log('receiveMessageFromApp', data)
     })
   },
   mounted() {
+    const a = ref('1')
+    console.log('mounted!!!' + JSON.stringify(a))
     this.subTitle = 'Midea 模版项目'
   },
   computed: {
@@ -173,7 +180,7 @@ export default {
       }
     },
   },
-}
+})
 </script>
 
 <style scoped>
