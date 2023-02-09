@@ -1,15 +1,16 @@
 /**
  * 框架基座核心方法
  */
-import { Core, Utils } from 'dolphin-weex-ui'
+// babel7加component插件不支持import {xxx} from 'xx'导入非组件导出内容
+import Core from 'dolphin-weex-ui/packages/core'
+import Utils from 'dolphin-weex-ui/packages/utils'
 import { Bridge } from 'dolphin-native-bridge'
 import { Log } from '../util'
 import DebugWindow from '../components/DebugWindow'
 
 export default {
   install(Vue) {
-    const Bus = new Vue()
-    Vue.prototype.$bus = Bus
+    Vue.prototype.$bus = new Vue()
     Vue.prototype.$bridge = Bridge
     Vue.prototype.$util = Utils
     Vue.prototype.$alert = Core.alert
