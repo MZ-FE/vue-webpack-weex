@@ -13,7 +13,7 @@
     "dev": "npm run clean:all && webpack --watch --mode=development",
     "build": "npm run clean:all && webpack --mode=production",
     "build:pack": "npm run build && node ./build/pack.js",
-    "build:analyze": "npm run build --analyze",
+    "build:analyze": "npm run clean:all && webpack --mode=production --analyze",
     "push": "node build/push.js",
     "clean:all": "rimraf ./entry ./dist ./release",
     "lint": "eslint --ext .js,.vue src --fix",
