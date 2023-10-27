@@ -45,7 +45,7 @@ const pushToEnds = () => {
 
     // 写入安卓
     const adb_path = `${ADB_PREFIX}${ADB_APP_PATH}${plugin_dir}`
-    const adb_path_txt = chalk.greenBright.italic(dist_path)
+    const adb_path_txt = chalk.greenBright.italic(adb_path)
     const adb_exec = `adb push ${dist_path} ${adb_path}`
     const adb_echo = `${time} adb push ${dist_path_txt} ${adb_path_txt} ${version_txt}`
     if (ends.includes('adb')) {

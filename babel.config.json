@@ -1,0 +1,21 @@
+{
+  "presets": [
+    [
+      "@babel/preset-env",
+      {
+        "targets": {
+          "chrome": "67"
+        }
+      }
+    ]
+  ],
+  "plugins": [
+    ["@babel/plugin-proposal-object-rest-spread", { "loose": true }],
+    ["@babel/plugin-transform-spread", {
+      "loose": true
+    }],
+    [
+      "@babel/plugin-transform-runtime"
+    ]
+  ]
+}

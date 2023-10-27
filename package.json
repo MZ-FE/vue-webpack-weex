@@ -1,7 +1,7 @@
 {
   "name": "<%= projectName %>",
   "description": "A weex project with dolphin weex ui",
-  "version": "2023.0209.1344",
+  "version": "2023.1027.1359",
   "main": "",
   "keywords": [
     "weex",
@@ -29,6 +29,8 @@
     }
   },
   "dependencies": {
+    "@babel/plugin-proposal-object-rest-spread": "^7.20.7",
+    "@babel/plugin-transform-spread": "^7.22.5",
     "dayjs": "^1.11.7",
     "dolphin-native-bridge": "^0.2.6",
     "dolphin-weex-ui": "^1.1.0",
