@@ -1,7 +1,10 @@
 {
   "name": "<%= projectName %>",
   "description": "A weex project with dolphin weex ui",
-  "version": "2023.1027.1359",
+  "version": "2024.1119.1734",
+  "engines": {
+    "node": ">=16.0.0"
+  },
   "main": "",
   "keywords": [
     "weex",
@@ -35,7 +38,8 @@
     "dolphin-native-bridge": "^0.2.6",
     "dolphin-weex-ui": "^1.1.0",
     "mz-weex-ui": "^1.6.5",
-    "vue": "2.6.14",
+    "vue": "2.7.16",
+    "vue-template-compiler": "2.7.16",
     "vuex": "3.6.2",
     "weex-bindingx": "0.0.49"
   },
