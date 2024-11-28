@@ -1,7 +1,7 @@
 {
   "name": "<%= projectName %>",
   "description": "A weex project with dolphin weex ui",
-  "version": "2024.1119.1734",
+  "version": "2024.1128.0916",
   "engines": {
     "node": ">=16.0.0"
   },
@@ -14,6 +14,7 @@
   "scripts": {
     "start": "npm run dev",
     "dev": "npm run clean:all && webpack --watch --mode=development",
+    "debug": "npm run clean:all && webpack --mode=development",
     "build": "npm run clean:all && webpack --mode=production",
     "build:pack": "npm run build && node ./build/pack.js",
     "build:analyze": "npm run clean:all && webpack --mode=production --analyze",
@@ -35,8 +36,9 @@
     "@babel/plugin-proposal-object-rest-spread": "^7.20.7",
     "@babel/plugin-transform-spread": "^7.22.5",
     "dayjs": "^1.11.7",
-    "dolphin-native-bridge": "^0.2.6",
-    "dolphin-weex-ui": "^1.1.0",
+    "dolphin-native-bridge": "^0.5.0",
+    "dolphin-weex-console": "^0.2.1",
+    "dolphin-weex-ui": "^2.2.7",
     "mz-weex-ui": "^1.6.5",
     "vue": "2.7.16",
     "vue-template-compiler": "2.7.16",
@@ -52,6 +54,7 @@
     "@babel/runtime-corejs3": "^7.19.1",
     "@commitlint/cli": "^17.2.0",
     "@commitlint/config-conventional": "^17.2.0",
+    "@dolphinweex/weex-loader": "^0.3.3",
     "babel-core": "^7.0.0-bridge.0",
     "babel-eslint": "^10.1.0",
     "babel-loader": "^7.1.5",

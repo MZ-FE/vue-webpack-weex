@@ -28,6 +28,7 @@ module.exports = (_, argv) => {
       {
         apply: compiler => {
           compiler.hooks.done.tap('AutoPush', () => {
+            console.log('Compiled successfully') // 必须增加，IDE通过检测该日志输出判断插件是否编译完成，进而唤醒手机进入调试模式，可在任意其他compiler.hooks.done的监听事件中增加该日志
             if (!env.PUSH_AFTER_DONE) {
               return
             }
@@ -57,6 +58,7 @@ module.exports = (_, argv) => {
       watchOptions: {
         ignored: /package.json/,
       },
+      devtool: 'inline-source-map', // 重要！重要！重要！修改inline-source-map或者source-map，仅调试模式增加，该设置会大幅增加打包后代码的体积
       plugins: [
         // 打包大小可视化分析
         new BundleAnalyzerPlugin({

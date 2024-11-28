@@ -9,7 +9,7 @@ module.exports = [
   },
   {
     test: /\.vue(\?[^?]+)?$/,
-    use: 'weex-loader',
+    use: '@dolphinweex/weex-loader',
   },
   {
     test: /\.(png|svg|jpg|gif)$/,
