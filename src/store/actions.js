@@ -2,7 +2,7 @@ import merge from 'lodash/merge'
 import dayjs from 'dayjs'
 import debugUtil from '../util/debugUtil'
 import { SimpleDiff } from '../util'
-import { commomParam, event } from '../common/burialPointData'
+import { commonParam, event } from '../common/burialPointData'
 import { DEBOUNCE_TIME, THROTTLE_TIME } from '../config'
 
 let debounceTimer = null
@@ -373,7 +373,7 @@ export default {
     const params = {
       event,
       eventParams: {
-        ...commomParam,
+        ...commonParam,
         widget_name: `${state.deviceInfo.deviceType}_${state.deviceInfo.deviceSn8}`, // 插件包名称
         widget_version: PLUGIN_VERSION, // 插件包版本号
         widget_cate: state.deviceInfo.deviceType, // 设备品类代码

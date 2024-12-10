@@ -1,4 +1,4 @@
-export const commomParam = {
+export const commonParam = {
   module: '插件', // 模块
   bd_name: '美智光电', // 事业部名称
   bd_code: 'QT', // 事业部代码，美智没有,只能填其他QT,
