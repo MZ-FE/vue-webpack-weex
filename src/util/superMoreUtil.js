@@ -38,7 +38,9 @@ const superMoreUtil = {
         resData => {
           try {
             resolve(JSON.parse(resData))
-          } catch (error) {}
+          } catch (error) {
+            reject(error)
+          }
         },
         error => {
           reject(error)

@@ -131,7 +131,9 @@ export default {
       if (result !== '' && result !== undefined) {
         this.show = JSON.parse(result)
       }
-    } catch (error) {}
+    } catch (error) {
+      console.log(error)
+    }
 
     this.$bus.$on('log', data => {
       if (!this.isShowDebug || this.pause) {

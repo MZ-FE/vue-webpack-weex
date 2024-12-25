@@ -7,12 +7,7 @@ module.exports = {
   extends: ['plugin:vue/essential', 'eslint:recommended', 'prettier'],
   plugins: ['vue', 'prettier'],
   rules: {
-    'no-undef': 0,
-    'no-empty': 0,
-    'no-useless-escape': 0,
     'prettier/prettier': 'error',
-    'space-before-function-paren': 0,
-    'comma-dangle': 0,
     'vue/multi-word-component-names': [
       'error',
       {
@@ -26,6 +21,10 @@ module.exports = {
   globals: {
     Vue: true,
     weex: true,
+    APPTYPE_NAME: 'readonly',
+    PLUGIN_VERSION: 'readonly',
+    PAGE_NAME: 'readonly',
+    PLUGIN_VERSION: 'readonly',
   },
   parserOptions: {
     ecmaVersion: 2019,

@@ -10,7 +10,7 @@ export function delay(ms = 0) {
 
 export function getParameterByName(name) {
   const url = this.$getConfig().bundleUrl
-  name = name.replace(/[\[\]]/g, '\\$&')
+  name = name.replace(/[[\]]/g, '\\$&')
   const regex = new RegExp(`[?&]${name}(=([^&#]*)|&|#|$)`)
   const results = regex.exec(url)
   if (!results) return null
@@ -168,5 +168,7 @@ export async function Log(...params) {
         }
       }
     }
-  } catch (err) {}
+  } catch (err) {
+    console.error(err)
+  }
 }
